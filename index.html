@@ -203,7 +203,45 @@ table.timetable th { background:linear-gradient(135deg,var(--p1),var(--p2)); col
 .ticket-time { font-size:11px; color:var(--text-t); }
 .ticket-msg { font-size:13px; color:var(--text); line-height:1.5; }
 
-/* ===== OFFLINE INDICATOR ===== */
+/* ===== CALENDAR ===== */
+.cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+.cal-nav-btn { width:36px; height:36px; border-radius:50%; border:1.5px solid var(--border); background:var(--card); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
+.cal-nav-btn:hover { background:var(--accent-soft); border-color:var(--accent); }
+.cal-month-label { font-size:18px; font-weight:700; color:var(--text); }
+.cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+.cal-day-name { text-align:center; font-size:11px; font-weight:700; color:var(--text-s); padding:6px 0; }
+.cal-cell { min-height:90px; border-radius:10px; border:1.5px solid var(--border); background:var(--card); padding:6px; position:relative; transition:all .15s; }
+.cal-cell.other-month { background:var(--bg); opacity:.5; }
+.cal-cell.today { border-color:var(--accent); background:var(--accent-soft); }
+.cal-cell.drag-over-cal { background:var(--accent-soft); border-color:var(--accent); border-style:dashed; }
+.cal-date-num { font-size:12px; font-weight:700; color:var(--text-s); margin-bottom:4px; display:flex; align-items:center; justify-content:space-between; }
+.cal-date-num.today-num { color:var(--accent); }
+.cal-add-btn { opacity:0; width:18px; height:18px; border-radius:50%; border:none; background:var(--accent); color:#fff; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:opacity .15s; }
+.cal-cell:hover .cal-add-btn { opacity:1; }
+.cal-notes { display:flex; flex-direction:column; gap:3px; }
+.sticky-note { border-radius:7px; padding:5px 7px; font-size:11px; font-weight:600; cursor:grab; position:relative; transition:all .18s; box-shadow:0 2px 6px rgba(0,0,0,.08); line-height:1.3; }
+.sticky-note:hover { transform:translateY(-1px) rotate(0.5deg); box-shadow:0 4px 12px rgba(0,0,0,.12); }
+.sticky-note:hover .note-actions { opacity:1; }
+.sticky-note.dragging { opacity:.4; cursor:grabbing; }
+.note-actions { opacity:0; position:absolute; top:2px; right:2px; display:flex; gap:2px; transition:opacity .15s; }
+.note-act-btn { width:16px; height:16px; border-radius:4px; border:none; font-size:9px; cursor:pointer; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.8); }
+/* Note panel (right side) */
+.note-panel { width:240px; flex-shrink:0; }
+.note-panel-title { font-size:12px; font-weight:700; color:var(--text-s); text-transform:uppercase; letter-spacing:.7px; margin-bottom:8px; }
+.note-card-list { display:flex; flex-direction:column; gap:6px; }
+.note-card { border-radius:10px; padding:10px 12px; cursor:grab; border:1.5px solid transparent; transition:all .18s; user-select:none; position:relative; box-shadow:0 2px 8px rgba(0,0,0,.06); }
+.note-card:hover { transform:translateY(-1px); box-shadow:0 4px 14px rgba(0,0,0,.10); }
+.note-card.dragging { opacity:.4; }
+.note-card-title { font-size:13px; font-weight:700; }
+.note-card-body { font-size:11px; opacity:.75; margin-top:3px; white-space:pre-wrap; }
+.note-card-actions { display:flex; gap:4px; margin-top:6px; }
+/* Profile avatar upload */
+.avatar-upload-wrap { position:relative; display:inline-block; cursor:pointer; }
+.avatar-upload-wrap:hover .avatar-overlay { opacity:1; }
+.avatar-overlay { position:absolute; inset:0; border-radius:50%; background:rgba(0,0,0,.4); display:flex; align-items:center; justify-content:center; color:#fff; font-size:11px; font-weight:600; opacity:0; transition:opacity .2s; border-radius:50%; }
+.avatar-img { width:80px; height:80px; border-radius:50%; object-fit:cover; border:3px solid var(--accent-soft); }
+@media(max-width:900px){ .cal-layout{ flex-direction:column; } .note-panel{ width:100%; } }
+@media(max-width:600px){ .cal-cell{ min-height:60px; } .cal-grid{ gap:2px; } .sticky-note{ font-size:10px; } }
 .offline-bar { background:var(--warn); color:#fff; text-align:center; padding:6px; font-size:13px; font-weight:600; display:none; }
 .offline-bar.show { display:block; }
 
@@ -310,6 +348,7 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         <div class="nav-section-title">เมนูหลัก</div>
         <div class="nav-item active" data-p="dashboard" onclick="goPage('dashboard')"><span class="nav-icon">🏠</span> แดชบอร์ด</div>
         <div class="nav-item" data-p="timetable" onclick="goPage('timetable')"><span class="nav-icon">📅</span> ตารางเรียน</div>
+        <div class="nav-item" data-p="calendar" onclick="goPage('calendar')"><span class="nav-icon">🗓️</span> ปฏิทิน & โน๊ต</div>
         <div class="nav-item" data-p="profile" onclick="goPage('profile')"><span class="nav-icon">👤</span> ข้อมูลส่วนตัว</div>
         <div class="nav-item" data-p="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span> ตั้งค่าตาราง</div>
         <div class="nav-item" data-p="report" onclick="goPage('report')"><span class="nav-icon">📢</span> แจ้งปัญหา</div>
@@ -379,17 +418,54 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         </div>
       </div>
 
-      <!-- PROFILE PAGE -->
+      <!-- CALENDAR PAGE -->
+      <div id="page-calendar" class="content-pad hidden">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+          <h2 style="flex:1;">🗓️ ปฏิทิน &amp; โน๊ต</h2>
+          <button class="btn btn-primary btn-sm" onclick="openNoteModal()">✏️ สร้างโน๊ตใหม่</button>
+        </div>
+        <div style="display:flex;gap:16px;align-items:flex-start;" class="cal-layout">
+          <!-- Calendar -->
+          <div style="flex:1;min-width:0;">
+            <div class="card">
+              <div class="cal-header">
+                <button class="cal-nav-btn" onclick="calNav(-1)">‹</button>
+                <div class="cal-month-label" id="cal-month-label">-</div>
+                <button class="cal-nav-btn" onclick="calNav(1)">›</button>
+              </div>
+              <div class="cal-grid" id="cal-day-names"></div>
+              <div class="cal-grid" id="cal-cells" style="margin-top:4px;"></div>
+            </div>
+          </div>
+          <!-- Note panel -->
+          <div class="note-panel">
+            <div class="card" style="position:sticky;top:76px;">
+              <div class="note-panel-title">📌 โน๊ตทั้งหมด</div>
+              <button class="btn btn-ghost btn-full btn-sm mb-8" style="border-style:dashed;" onclick="openNoteModal()">+ สร้างโน๊ตใหม่</button>
+              <div class="note-card-list" id="note-card-list"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROFILE PAGE (upgraded with avatar) -->
       <div id="page-profile" class="content-pad hidden">
         <div class="page-title">👤 ข้อมูลส่วนตัว</div>
         <div class="card" style="max-width:580px;">
-          <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
-            <div class="avatar" style="width:60px;height:60px;font-size:22px;" id="profile-big-av">-</div>
-            <div>
+          <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;flex-wrap:wrap;">
+            <!-- Avatar upload -->
+            <div class="avatar-upload-wrap" onclick="document.getElementById('avatar-file-input').click()" title="คลิกเพื่อเปลี่ยนรูป">
+              <img id="profile-big-av-img" src="" alt="avatar" class="avatar-img" style="display:none;">
+              <div class="avatar" style="width:80px;height:80px;font-size:28px;display:flex;" id="profile-big-av">-</div>
+              <div class="avatar-overlay">📷<br>เปลี่ยนรูป</div>
+              <input type="file" id="avatar-file-input" accept="image/*" style="display:none;" onchange="handleAvatarUpload(event)">
+            </div>
+            <div style="flex:1;">
               <div style="font-size:18px;font-weight:700;" id="profile-big-name">-</div>
               <div style="font-size:13px;color:var(--text-s);" id="profile-big-role">-</div>
+              <div style="font-size:11px;color:var(--text-t);margin-top:4px;">คลิกรูปเพื่อเปลี่ยน (ขนาดแนะนำ 850×850 px)</div>
             </div>
-            <button class="btn btn-ghost btn-sm" style="margin-left:auto;" onclick="openProfileModal()">✏️ แก้ไข</button>
+            <button class="btn btn-ghost btn-sm" onclick="openProfileModal()">✏️ แก้ไขข้อมูล</button>
           </div>
           <div class="form-row" id="profile-info-grid" style="gap:14px;"></div>
         </div>
@@ -583,7 +659,44 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
   </div>
 </div>
 
-<!-- Day Label Modal -->
+<!-- Note Create/Edit Modal -->
+<div class="modal-bg" id="modal-note">
+  <div class="modal" style="max-width:400px;">
+    <h3 id="note-modal-h">✏️ สร้างโน๊ต</h3>
+    <input type="hidden" id="note-edit-id">
+    <div class="form-group">
+      <label>หัวข้อ *</label>
+      <input type="text" id="note-title" placeholder="เช่น ส่งการบ้านวิทย์" maxlength="60">
+    </div>
+    <div class="form-group">
+      <label>รายละเอียด</label>
+      <textarea id="note-body" placeholder="เขียนโน๊ต..." style="min-height:90px;" maxlength="500"></textarea>
+    </div>
+    <div class="form-group">
+      <label>สีโน๊ต</label>
+      <div class="color-grid" id="note-color-grid"></div>
+    </div>
+    <div class="form-group">
+      <label>วันที่ (ลากไปปฏิทิน หรือเลือกที่นี่)</label>
+      <input type="date" id="note-date">
+    </div>
+    <div id="note-modal-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-note')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveNote()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Note Quick View Modal -->
+<div class="modal-bg" id="modal-note-view">
+  <div class="modal" style="max-width:340px;">
+    <div id="note-view-content"></div>
+    <div class="modal-actions" style="margin-top:12px;">
+      <button class="btn btn-ghost" onclick="closeModal('modal-note-view')">ปิด</button>
+    </div>
+  </div>
+</div>
 <div class="modal-bg" id="modal-day">
   <div class="modal" style="max-width:300px;">
     <h3>✏️ แก้ไขชื่อวัน</h3>
@@ -905,6 +1018,7 @@ function initApp(){
   renderDashboard();
   updateAdminBadge();
   startSessionCheck();
+  loadAvatarFromStorage();
 }
 
 // ===================================================
@@ -927,6 +1041,7 @@ function goPage(p){
   if(p==='profile')renderProfile();
   if(p==='settings')renderSettings();
   if(p==='admin'&&CU.role==='admin'){renderAdmin();adminTab('overview');}
+  if(p==='calendar'){ renderCalendar(); }
   closeSidebar();
 }
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
@@ -955,7 +1070,7 @@ function renderDashboard(){
     <div class="qa-btn" onclick="goPage('timetable')"><div class="qa-icon">📅</div><div class="qa-label">ดูตาราง</div></div>
     <div class="qa-btn" onclick="${tts.length<3?"openNewTTModal()":"alert('ครบ 3 ตารางแล้ว')"}"><div class="qa-icon">➕</div><div class="qa-label">สร้างตาราง</div></div>
     <div class="qa-btn" onclick="goPage('settings')"><div class="qa-icon">⚙️</div><div class="qa-label">ตั้งค่า</div></div>
-    <div class="qa-btn" onclick="goPage('report')"><div class="qa-icon">📢</div><div class="qa-label">แจ้งปัญหา</div></div>
+    <div class="qa-btn" onclick="goPage('calendar')"><div class="qa-icon">🗓️</div><div class="qa-label">ปฏิทิน</div></div>
     <div class="qa-btn" onclick="openModal('modal-theme')"><div class="qa-icon">🎨</div><div class="qa-label">เปลี่ยนธีม</div></div>
     ${CU.role==='admin'?`<div class="qa-btn" onclick="goPage('admin')"><div class="qa-icon">👑</div><div class="qa-label">Admin</div></div>`:''}`;
   // TT list
@@ -1306,8 +1421,19 @@ function saveDayLabel(){const idx=+document.getElementById('day-idx').value;cons
 // ===================================================
 function renderProfile(){
   const u=ls('tt_session')||CU;
-  document.getElementById('profile-big-av').textContent=(u.name||u.username).charAt(0).toUpperCase();
-  document.getElementById('profile-big-name').textContent=u.name||u.username;
+  const n=u.name||u.username;
+  // Avatar
+  const savedAvatar=ls('tt_avatar_'+CU.id);
+  const imgEl=document.getElementById('profile-big-av-img');
+  const avEl=document.getElementById('profile-big-av');
+  if(savedAvatar&&imgEl&&avEl){
+    imgEl.src=savedAvatar; imgEl.style.display='block'; avEl.style.display='none';
+  } else if(avEl){
+    avEl.textContent=n.charAt(0).toUpperCase();
+    avEl.style.display='flex';
+    if(imgEl) imgEl.style.display='none';
+  }
+  document.getElementById('profile-big-name').textContent=n;
   document.getElementById('profile-big-role').textContent=u.role==='admin'?'👑 ผู้ดูแลระบบ':'👤 นักเรียน';
   const fields=[['ชื่อ-นามสกุล',u.name],['Username',u.username],['Email',u.email],['โรงเรียน',u.school],['ชั้นเรียน',u.grade],['ที่อยู่',u.addr],['ตำบล',u.sub],['อำเภอ',u.dist],['จังหวัด',u.prov]];
   document.getElementById('profile-info-grid').innerHTML=fields.map(([l,v])=>`<div><label>${l}</label><p style="font-size:14px;font-weight:600;">${escH(v||'-')}</p></div>`).join('');
@@ -1660,6 +1786,259 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelect
 // ===================================================
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function fmtDate(ts){if(!ts)return'-';const d=new Date(ts);return`${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()+543}`;}
+
+// ===================================================
+// CALENDAR & NOTES
+// ===================================================
+const NOTE_COLORS = [
+  {k:'yellow', bg:'#FFF9C4', tx:'#7A6000', bd:'#FFE082'},
+  {k:'pink',   bg:'#FCE4EC', tx:'#880E4F', bd:'#F48FB1'},
+  {k:'blue',   bg:'#E3F2FD', tx:'#0D47A1', bd:'#90CAF9'},
+  {k:'green',  bg:'#E8F5E9', tx:'#1B5E20', bd:'#A5D6A7'},
+  {k:'purple', bg:'#EDE7F6', tx:'#4A148C', bd:'#CE93D8'},
+  {k:'orange', bg:'#FFF3E0', tx:'#E65100', bd:'#FFCC80'},
+  {k:'mint',   bg:'#E0F2F1', tx:'#004D40', bd:'#80CBC4'},
+  {k:'rose',   bg:'#FFF0F0', tx:'#B71C1C', bd:'#EF9A9A'},
+];
+const CAL_DAY_TH = ['อา','จ','อ','พ','พฤ','ศ','ส'];
+const MONTH_TH = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+
+let calYear = new Date().getFullYear();
+let calMonth = new Date().getMonth();
+let calDragNoteId = null;
+
+function getUserNotes(){ return ls('tt_notes_'+CU.id)||[]; }
+function saveUserNotes(n){ ss('tt_notes_'+CU.id,n); }
+
+function renderCalendar(){
+  // Header
+  document.getElementById('cal-month-label').textContent = `${MONTH_TH[calMonth]} ${calYear+543}`;
+  // Day names
+  document.getElementById('cal-day-names').innerHTML = CAL_DAY_TH.map(d=>`<div class="cal-day-name">${d}</div>`).join('');
+  // Cells
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const daysInPrev = new Date(calYear, calMonth, 0).getDate();
+  const today = new Date();
+  const notes = getUserNotes();
+  let cells = '';
+  // prev month days
+  for(let i=firstDay-1; i>=0; i--){
+    cells += `<div class="cal-cell other-month"><div class="cal-date-num">${daysInPrev-i}</div></div>`;
+  }
+  // this month
+  for(let d=1; d<=daysInMonth; d++){
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = d===today.getDate()&&calMonth===today.getMonth()&&calYear===today.getFullYear();
+    const dayNotes = notes.filter(n=>n.date===dateStr);
+    const notesHtml = dayNotes.slice(0,3).map(n=>{
+      const col = NOTE_COLORS.find(c=>c.k===n.colorKey)||NOTE_COLORS[0];
+      return `<div class="sticky-note" style="background:${col.bg};color:${col.tx};border:1px solid ${col.bd};"
+        draggable="true"
+        ondragstart="calNoteDragStart(event,'${n.id}')"
+        ondragend="this.classList.remove('dragging')"
+        onclick="viewNote('${n.id}')">
+        <div class="note-actions">
+          <button class="note-act-btn" onclick="event.stopPropagation();openNoteModal('${n.id}')" title="แก้ไข">✏️</button>
+          <button class="note-act-btn" onclick="event.stopPropagation();deleteNote('${n.id}')" title="ลบ" style="color:#C0392B;">✕</button>
+        </div>
+        ${escH(n.title)}
+      </div>`;
+    }).join('');
+    const moreHtml = dayNotes.length>3 ? `<div style="font-size:10px;color:var(--text-s);padding:2px 4px;">+${dayNotes.length-3} อีก...</div>` : '';
+    cells += `<div class="cal-cell${isToday?' today':''}"
+      ondragover="event.preventDefault();this.classList.add('drag-over-cal')"
+      ondragleave="this.classList.remove('drag-over-cal')"
+      ondrop="calNoteDrop(event,'${dateStr}',this)">
+      <div class="cal-date-num${isToday?' today-num':''}">
+        <span>${d}</span>
+        <button class="cal-add-btn" onclick="openNoteModal(null,'${dateStr}')" title="เพิ่มโน๊ต">+</button>
+      </div>
+      <div class="cal-notes">${notesHtml}${moreHtml}</div>
+    </div>`;
+  }
+  // next month padding
+  const totalCells = firstDay + daysInMonth;
+  const remaining = totalCells%7===0 ? 0 : 7-(totalCells%7);
+  for(let i=1; i<=remaining; i++){
+    cells += `<div class="cal-cell other-month"><div class="cal-date-num">${i}</div></div>`;
+  }
+  document.getElementById('cal-cells').innerHTML = cells;
+  renderNotePanel();
+}
+
+function renderNotePanel(){
+  const notes = getUserNotes().slice().sort((a,b)=>b.createdAt-a.createdAt);
+  const list = document.getElementById('note-card-list');
+  if(!list) return;
+  list.innerHTML = notes.map(n=>{
+    const col = NOTE_COLORS.find(c=>c.k===n.colorKey)||NOTE_COLORS[0];
+    return `<div class="note-card" style="background:${col.bg};color:${col.tx};border-color:${col.bd};"
+      draggable="true"
+      ondragstart="calNoteDragStart(event,'${n.id}')"
+      ondragend="this.classList.remove('dragging')">
+      <div class="note-card-title">${escH(n.title)}</div>
+      ${n.body?`<div class="note-card-body">${escH(n.body.slice(0,80))}${n.body.length>80?'…':''}</div>`:''}
+      ${n.date?`<div style="font-size:10px;margin-top:4px;opacity:.6;">📅 ${formatCalDate(n.date)}</div>`:''}
+      <div class="note-card-actions">
+        <button class="subj-card-btn" onclick="openNoteModal('${n.id}')" style="color:${col.tx};">✏️ แก้ไข</button>
+        <button class="subj-card-btn" onclick="deleteNote('${n.id}')" style="color:#C0392B;">🗑️ ลบ</button>
+      </div>
+    </div>`;
+  }).join('')||`<p style="font-size:12px;color:var(--text-t);text-align:center;padding:12px;">ยังไม่มีโน๊ต<br>กด + เพื่อสร้าง</p>`;
+}
+
+function formatCalDate(dateStr){
+  if(!dateStr) return '';
+  const [y,m,d] = dateStr.split('-').map(Number);
+  return `${d} ${MONTH_TH[m-1]} ${y+543}`;
+}
+
+function calNav(dir){
+  calMonth += dir;
+  if(calMonth>11){calMonth=0;calYear++;}
+  if(calMonth<0){calMonth=11;calYear--;}
+  renderCalendar();
+}
+
+function calNoteDragStart(e, noteId){
+  calDragNoteId = noteId;
+  e.dataTransfer.setData('calNoteId', noteId);
+  e.currentTarget.classList.add('dragging');
+}
+
+function calNoteDrop(e, dateStr, cell){
+  e.preventDefault();
+  cell.classList.remove('drag-over-cal');
+  const noteId = e.dataTransfer.getData('calNoteId') || calDragNoteId;
+  if(!noteId) return;
+  const notes = getUserNotes();
+  const idx = notes.findIndex(n=>n.id===noteId);
+  if(idx>=0){ notes[idx].date = dateStr; saveUserNotes(notes); renderCalendar(); }
+  calDragNoteId = null;
+}
+
+function openNoteModal(editId=null, prefillDate=''){
+  document.getElementById('note-edit-id').value = editId||'';
+  document.getElementById('note-modal-h').textContent = editId ? '✏️ แก้ไขโน๊ต' : '✏️ สร้างโน๊ตใหม่';
+  document.getElementById('note-modal-msg').innerHTML = '';
+  const n = editId ? getUserNotes().find(x=>x.id===editId) : null;
+  document.getElementById('note-title').value = n?.title||'';
+  document.getElementById('note-body').value = n?.body||'';
+  document.getElementById('note-date').value = n?.date||prefillDate||'';
+  // Color picker
+  const cg = document.getElementById('note-color-grid');
+  const selKey = n?.colorKey||'yellow';
+  cg.innerHTML = NOTE_COLORS.map(c=>`<div class="color-swatch${c.k===selKey?' sel':''}"
+    style="background:${c.bg};border-color:${c.bd};" data-ck="${c.k}"
+    onclick="document.querySelectorAll('#note-color-grid .color-swatch').forEach(x=>x.classList.remove('sel'));this.classList.add('sel');">
+  </div>`).join('');
+  openModal('modal-note');
+  setTimeout(()=>document.getElementById('note-title').focus(),80);
+}
+
+function saveNote(){
+  const title = sanitize(document.getElementById('note-title').value);
+  if(!title){ document.getElementById('note-modal-msg').innerHTML='<div class="msg msg-err">กรุณาใส่หัวข้อโน๊ต</div>'; return; }
+  const body = sanitize(document.getElementById('note-body').value).slice(0,500);
+  const date = document.getElementById('note-date').value;
+  const colorKey = document.querySelector('#note-color-grid .color-swatch.sel')?.dataset.ck||'yellow';
+  const safeColorKey = NOTE_COLORS.find(c=>c.k===colorKey)?colorKey:'yellow';
+  const notes = getUserNotes();
+  const editId = document.getElementById('note-edit-id').value;
+  if(editId){
+    const idx = notes.findIndex(n=>n.id===editId);
+    if(idx>=0) notes[idx] = {...notes[idx], title, body, date, colorKey:safeColorKey, updatedAt:Date.now()};
+  } else {
+    if(notes.length>=200){ document.getElementById('note-modal-msg').innerHTML='<div class="msg msg-err">โน๊ตเต็มแล้ว (สูงสุด 200 โน๊ต)</div>'; return; }
+    notes.unshift({id:'n'+Date.now(), title, body, date, colorKey:safeColorKey, createdAt:Date.now()});
+  }
+  saveUserNotes(notes);
+  closeModal('modal-note');
+  renderCalendar();
+}
+
+function deleteNote(id){
+  if(!confirm('ลบโน๊ตนี้?')) return;
+  const notes = getUserNotes().filter(n=>n.id!==id);
+  saveUserNotes(notes);
+  renderCalendar();
+}
+
+function viewNote(id){
+  const n = getUserNotes().find(x=>x.id===id);
+  if(!n) return;
+  const col = NOTE_COLORS.find(c=>c.k===n.colorKey)||NOTE_COLORS[0];
+  document.getElementById('note-view-content').innerHTML=`
+    <div style="background:${col.bg};color:${col.tx};border-radius:12px;padding:16px;margin-bottom:12px;">
+      <div style="font-size:17px;font-weight:700;">${escH(n.title)}</div>
+      ${n.date?`<div style="font-size:12px;margin-top:4px;opacity:.7;">📅 ${formatCalDate(n.date)}</div>`:''}
+    </div>
+    ${n.body?`<div style="font-size:14px;line-height:1.7;white-space:pre-wrap;color:var(--text);">${escH(n.body)}</div>`:''}
+    <div style="display:flex;gap:8px;margin-top:14px;">
+      <button class="btn btn-ghost btn-sm" onclick="closeModal('modal-note-view');openNoteModal('${n.id}')">✏️ แก้ไข</button>
+      <button class="btn btn-danger btn-sm" onclick="closeModal('modal-note-view');deleteNote('${n.id}')">🗑️ ลบ</button>
+    </div>`;
+  openModal('modal-note-view');
+}
+
+// ===================================================
+// AVATAR UPLOAD
+// ===================================================
+function handleAvatarUpload(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ alert('กรุณาเลือกไฟล์รูปภาพ'); return; }
+  if(file.size > 5*1024*1024){ alert('ไฟล์ใหญ่เกินไป กรุณาใช้ไฟล์ไม่เกิน 5MB'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const img = new Image();
+    img.onload = function(){
+      // Resize/crop to 850x850
+      const canvas = document.createElement('canvas');
+      canvas.width = 850; canvas.height = 850;
+      const ctx = canvas.getContext('2d');
+      // Center crop
+      const minSide = Math.min(img.width, img.height);
+      const sx = (img.width - minSide)/2;
+      const sy = (img.height - minSide)/2;
+      ctx.drawImage(img, sx, sy, minSide, minSide, 0, 0, 850, 850);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+      // Save
+      ss('tt_avatar_'+CU.id, dataUrl);
+      applyAvatarToUI(dataUrl);
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function applyAvatarToUI(dataUrl){
+  if(!dataUrl) return;
+  // Profile page
+  const imgEl = document.getElementById('profile-big-av-img');
+  const avEl = document.getElementById('profile-big-av');
+  if(imgEl && avEl){
+    imgEl.src = dataUrl;
+    imgEl.style.display = 'block';
+    avEl.style.display = 'none';
+  }
+  // Sidebar & topbar avatar
+  ['sb-avatar','top-avatar'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el){
+      el.style.backgroundImage = `url(${dataUrl})`;
+      el.style.backgroundSize = 'cover';
+      el.style.backgroundPosition = 'center';
+      el.textContent = '';
+    }
+  });
+}
+
+function loadAvatarFromStorage(){
+  const dataUrl = ls('tt_avatar_'+CU?.id);
+  if(dataUrl) applyAvatarToUI(dataUrl);
+}
 
 // ===================================================
 // BOOT
