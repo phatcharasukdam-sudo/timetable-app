@@ -603,24 +603,70 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
 
 <!-- Profile Edit Modal -->
 <div class="modal-bg" id="modal-profile">
-  <div class="modal">
-    <h3>✏️ แก้ไขข้อมูล</h3>
-    <div class="form-row">
-      <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="pe-name"></div>
-      <div class="form-group"><label>โรงเรียน</label><input type="text" id="pe-school"></div>
+  <div class="modal" style="max-width:500px;">
+    <h3>✏️ แก้ไขข้อมูลส่วนตัว</h3>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:18px;">
+      <button class="btn btn-sm" id="ptab-btn-info" style="flex:1;border-radius:7px;" onclick="switchProfileTab('info')">📋 ข้อมูลทั่วไป</button>
+      <button class="btn btn-sm" id="ptab-btn-account" style="flex:1;border-radius:7px;" onclick="switchProfileTab('account')">🔐 บัญชี &amp; รหัสผ่าน</button>
     </div>
-    <div class="form-row">
-      <div class="form-group"><label>ชั้นเรียน</label><input type="text" id="pe-grade"></div>
-      <div class="form-group"><label>ที่อยู่</label><input type="text" id="pe-addr"></div>
+
+    <!-- Tab: General Info -->
+    <div id="ptab-info">
+      <div class="form-row">
+        <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="pe-name"></div>
+        <div class="form-group"><label>โรงเรียน</label><input type="text" id="pe-school"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>ชั้นเรียน</label><input type="text" id="pe-grade"></div>
+        <div class="form-group"><label>ที่อยู่</label><input type="text" id="pe-addr"></div>
+      </div>
+      <div class="form-row-3">
+        <div class="form-group"><label>ตำบล</label><input type="text" id="pe-sub"></div>
+        <div class="form-group"><label>อำเภอ</label><input type="text" id="pe-dist"></div>
+        <div class="form-group"><label>จังหวัด</label><input type="text" id="pe-prov"></div>
+      </div>
+      <div id="profile-info-msg"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modal-profile')">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="saveProfile()">💾 บันทึก</button>
+      </div>
     </div>
-    <div class="form-row-3">
-      <div class="form-group"><label>ตำบล</label><input type="text" id="pe-sub"></div>
-      <div class="form-group"><label>อำเภอ</label><input type="text" id="pe-dist"></div>
-      <div class="form-group"><label>จังหวัด</label><input type="text" id="pe-prov"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('modal-profile')">ยกเลิก</button>
-      <button class="btn btn-primary" onclick="saveProfile()">💾 บันทึก</button>
+
+    <!-- Tab: Account & Password -->
+    <div id="ptab-account" class="hidden">
+      <div style="background:var(--accent-soft);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;color:var(--accent);">
+        🔒 ต้องยืนยันรหัสผ่านปัจจุบันก่อนเปลี่ยนข้อมูลบัญชี
+      </div>
+      <div class="form-group">
+        <label>รหัสผ่านปัจจุบัน *</label>
+        <input type="password" id="pe-current-pw" placeholder="รหัสผ่านที่ใช้ login อยู่">
+      </div>
+      <hr class="soft">
+      <div class="form-group">
+        <label>ชื่อผู้ใช้ใหม่ <span style="color:var(--text-t);font-weight:400;">(เว้นว่างถ้าไม่ต้องการเปลี่ยน)</span></label>
+        <input type="text" id="pe-new-username" placeholder="username ใหม่ (a-z, 0-9, _ เท่านั้น)">
+      </div>
+      <div class="form-group">
+        <label>อีเมลใหม่ <span style="color:var(--text-t);font-weight:400;">(เว้นว่างถ้าไม่ต้องการเปลี่ยน)</span></label>
+        <input type="email" id="pe-new-email" placeholder="email@example.com">
+      </div>
+      <hr class="soft">
+      <div class="form-group">
+        <label>รหัสผ่านใหม่ <span style="color:var(--text-t);font-weight:400;">(เว้นว่างถ้าไม่ต้องการเปลี่ยน)</span></label>
+        <input type="password" id="pe-new-pw" placeholder="อย่างน้อย 8 ตัวอักษร">
+      </div>
+      <div class="form-group">
+        <label>ยืนยันรหัสผ่านใหม่</label>
+        <input type="password" id="pe-confirm-pw" placeholder="พิมพ์รหัสผ่านใหม่อีกครั้ง">
+        <div class="form-hint" id="pw-strength-hint"></div>
+      </div>
+      <div id="profile-account-msg"></div>
+      <div class="modal-actions">
+        <button class="btn btn-ghost" onclick="closeModal('modal-profile')">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="saveAccountChanges()">🔐 บันทึกการเปลี่ยนแปลง</button>
+      </div>
     </div>
   </div>
 </div>
@@ -1438,11 +1484,60 @@ function renderProfile(){
   const fields=[['ชื่อ-นามสกุล',u.name],['Username',u.username],['Email',u.email],['โรงเรียน',u.school],['ชั้นเรียน',u.grade],['ที่อยู่',u.addr],['ตำบล',u.sub],['อำเภอ',u.dist],['จังหวัด',u.prov]];
   document.getElementById('profile-info-grid').innerHTML=fields.map(([l,v])=>`<div><label>${l}</label><p style="font-size:14px;font-weight:600;">${escH(v||'-')}</p></div>`).join('');
 }
+// Profile tab switcher
+function switchProfileTab(tab){
+  const tabs=['info','account'];
+  tabs.forEach(t=>{
+    document.getElementById('ptab-'+t).classList.toggle('hidden',t!==tab);
+    const btn=document.getElementById('ptab-btn-'+t);
+    btn.className='btn btn-sm'+(t===tab?' btn-primary':' btn-ghost');
+    btn.style.flex='1';btn.style.borderRadius='7px';
+  });
+}
+
 function openProfileModal(){
   const u=ls('tt_session')||CU;
-  ['name','school','grade','addr','sub','dist','prov'].forEach(f=>document.getElementById('pe-'+f).value=u[f]||'');
+  ['name','school','grade','addr','sub','dist','prov'].forEach(f=>{
+    const el=document.getElementById('pe-'+f);
+    if(el) el.value=u[f]||'';
+  });
+  // Reset account tab
+  ['pe-current-pw','pe-new-username','pe-new-email','pe-new-pw','pe-confirm-pw'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('profile-info-msg').innerHTML='';
+  document.getElementById('profile-account-msg').innerHTML='';
+  document.getElementById('pw-strength-hint').innerHTML='';
+  // Fill current username/email as placeholders
+  document.getElementById('pe-new-username').placeholder=u.username;
+  document.getElementById('pe-new-email').placeholder=u.email;
+  // Password strength on input
+  document.getElementById('pe-new-pw').oninput=checkPwStrength;
+  // Switch to info tab by default
+  switchProfileTab('info');
   openModal('modal-profile');
 }
+
+function checkPwStrength(){
+  const pw=document.getElementById('pe-new-pw').value;
+  const hint=document.getElementById('pw-strength-hint');
+  if(!pw){hint.innerHTML='';return;}
+  let score=0,tips=[];
+  if(pw.length>=8)score++;else tips.push('อย่างน้อย 8 ตัว');
+  if(/[A-Z]/.test(pw))score++;else tips.push('ตัวพิมพ์ใหญ่');
+  if(/[0-9]/.test(pw))score++;else tips.push('ตัวเลข');
+  if(/[^A-Za-z0-9]/.test(pw))score++;else tips.push('อักขระพิเศษ');
+  const levels=[
+    {label:'อ่อนมาก',color:'#E74C3C'},
+    {label:'อ่อน',color:'#E67E22'},
+    {label:'ปานกลาง',color:'#F1C40F'},
+    {label:'แข็งแรง',color:'#2ECC71'},
+    {label:'แข็งแรงมาก',color:'#27AE60'},
+  ];
+  const lv=levels[score]||levels[0];
+  hint.innerHTML=`<span style="color:${lv.color};font-weight:700;">● ${lv.label}</span>${tips.length?' — ควรเพิ่ม: '+tips.join(', '):''}`;
+}
+
 function saveProfile(){
   const users=ls('tt_users')||[];
   const i=users.findIndex(u=>u.id===CU.id);if(i<0)return;
@@ -1451,9 +1546,7 @@ function saveProfile(){
     if(el)users[i][f]=sanitize(el.value);
   });
   ss('tt_users',users);
-  // Re-issue session with updated data
-  const newSess=createSession(users[i]);
-  CU=newSess;
+  const newSess=createSession(users[i]);CU=newSess;
   closeModal('modal-profile');
   renderProfile();
   const n=CU.name||CU.username;
@@ -1461,7 +1554,112 @@ function saveProfile(){
   document.getElementById('top-avatar').textContent=n.charAt(0).toUpperCase();
   document.getElementById('sb-name').textContent=n;
   document.getElementById('sb-avatar').textContent=n.charAt(0).toUpperCase();
+  loadAvatarFromStorage();
   logActivity(`${n} แก้ไขข้อมูลส่วนตัว`);
+  document.getElementById('profile-info-msg').innerHTML='<div class="msg msg-ok">✅ บันทึกข้อมูลเรียบร้อย</div>';
+  setTimeout(()=>document.getElementById('profile-info-msg').innerHTML='',2500);
+}
+
+async function saveAccountChanges(){
+  const msgEl=document.getElementById('profile-account-msg');
+  msgEl.innerHTML='';
+  const currentPw=document.getElementById('pe-current-pw').value;
+  const newUsername=document.getElementById('pe-new-username').value.trim();
+  const newEmail=document.getElementById('pe-new-email').value.trim();
+  const newPw=document.getElementById('pe-new-pw').value;
+  const confirmPw=document.getElementById('pe-confirm-pw').value;
+
+  // Must provide current password
+  if(!currentPw){
+    msgEl.innerHTML='<div class="msg msg-err">กรุณากรอกรหัสผ่านปัจจุบันก่อน</div>';return;
+  }
+  // Must change at least one thing
+  if(!newUsername&&!newEmail&&!newPw){
+    msgEl.innerHTML='<div class="msg msg-warn">กรุณากรอกข้อมูลที่ต้องการเปลี่ยนอย่างน้อย 1 ช่อง</div>';return;
+  }
+
+  // SEC: Verify current password
+  const currentHash=await hashPassword(currentPw);
+  const users=ls('tt_users')||[];
+  const i=users.findIndex(u=>u.id===CU.id);
+  if(i<0){msgEl.innerHTML='<div class="msg msg-err">ไม่พบบัญชีนี้</div>';return;}
+  if(users[i].password!==currentHash){
+    msgEl.innerHTML='<div class="msg msg-err">รหัสผ่านปัจจุบันไม่ถูกต้อง</div>';
+    recordLoginFail();return;
+  }
+
+  // Validate new username
+  if(newUsername){
+    const safeUsername=sanitizeUsername(newUsername);
+    if(safeUsername!==newUsername){
+      msgEl.innerHTML='<div class="msg msg-err">ชื่อผู้ใช้ใช้ได้เฉพาะ a-z, 0-9, _ และภาษาไทย</div>';return;
+    }
+    if(newUsername.length<3){
+      msgEl.innerHTML='<div class="msg msg-err">ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร</div>';return;
+    }
+    if(users.find(u=>u.username===newUsername&&u.id!==CU.id)){
+      msgEl.innerHTML='<div class="msg msg-err">ชื่อผู้ใช้นี้ถูกใช้แล้ว</div>';return;
+    }
+  }
+
+  // Validate new email
+  if(newEmail){
+    if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)){
+      msgEl.innerHTML='<div class="msg msg-err">รูปแบบอีเมลไม่ถูกต้อง</div>';return;
+    }
+    if(users.find(u=>u.email===newEmail&&u.id!==CU.id)){
+      msgEl.innerHTML='<div class="msg msg-err">อีเมลนี้ถูกใช้แล้ว</div>';return;
+    }
+  }
+
+  // Validate new password
+  if(newPw){
+    if(newPw.length<8){
+      msgEl.innerHTML='<div class="msg msg-err">รหัสผ่านใหม่ต้องมีอย่างน้อย 8 ตัวอักษร</div>';return;
+    }
+    if(newPw.length>128){
+      msgEl.innerHTML='<div class="msg msg-err">รหัสผ่านยาวเกินไป</div>';return;
+    }
+    if(newPw!==confirmPw){
+      msgEl.innerHTML='<div class="msg msg-err">รหัสผ่านใหม่ไม่ตรงกัน</div>';return;
+    }
+    // Prevent reusing same password
+    const newHash=await hashPassword(newPw);
+    if(newHash===users[i].password){
+      msgEl.innerHTML='<div class="msg msg-err">รหัสผ่านใหม่ต้องไม่เหมือนรหัสเดิม</div>';return;
+    }
+  }
+
+  // Apply changes
+  const changes=[];
+  if(newUsername){users[i].username=sanitizeUsername(newUsername);changes.push('ชื่อผู้ใช้');}
+  if(newEmail){users[i].email=sanitizeEmail(newEmail);changes.push('อีเมล');}
+  if(newPw){users[i].password=await hashPassword(newPw);changes.push('รหัสผ่าน');}
+
+  ss('tt_users',users);
+  // Re-issue session
+  const newSess=createSession(users[i]);CU=newSess;
+  logActivity(`${CU.name||CU.username} เปลี่ยน${changes.join('/')}`);
+
+  // Clear fields
+  ['pe-current-pw','pe-new-username','pe-new-email','pe-new-pw','pe-confirm-pw'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('pw-strength-hint').innerHTML='';
+
+  msgEl.innerHTML=`<div class="msg msg-ok">✅ เปลี่ยน${changes.join('/')}สำเร็จ!</div>`;
+
+  // Update UI
+  renderProfile();
+  const n=CU.name||CU.username;
+  document.getElementById('top-uname').textContent=n;
+  document.getElementById('sb-name').textContent=n;
+  // If password changed → warn to re-login (but don't force)
+  if(changes.includes('รหัสผ่าน')){
+    setTimeout(()=>{
+      msgEl.innerHTML='<div class="msg msg-ok">✅ เปลี่ยนรหัสผ่านสำเร็จ กรุณา login ใหม่เพื่อความปลอดภัย</div>';
+    },1500);
+  }
 }
 
 // ===================================================
@@ -1497,6 +1695,7 @@ function updateAdminBadge(){
 // ===================================================
 let currentAdminTab='overview';
 function adminTab(t){
+  if(!requireAdmin('adminTab'))return;
   ['overview','users','tickets','test-tt'].forEach(tab=>{
     document.getElementById('atab-'+tab).classList.toggle('hidden',tab!==t);
   });
@@ -1619,12 +1818,14 @@ function saveEditUser(){
   closeModal('modal-edit-user');renderAdminUsers();
 }
 function adminDelUser(uid){
+  if(!requireAdmin('adminDelUser'))return;
   if(uid===CU.id){alert('ไม่สามารถลบบัญชีตัวเองได้');return;}
   if(!confirm('ลบผู้ใช้นี้และข้อมูลทั้งหมด?'))return;
   // Remove all user data
   const tts=ls('tt_list_'+uid)||[];
   tts.forEach(tt=>{localStorage.removeItem('tt_slots_'+uid+'_'+tt.id);localStorage.removeItem('tt_meta_'+uid+'_'+tt.id);});
-  ['tt_list_','tt_active_','tt_settings_','tt_subj_','tt_theme_'].forEach(prefix=>localStorage.removeItem(prefix+uid));
+  ['tt_list_','tt_active_','tt_settings_','tt_subj_','tt_theme_','tt_notes_','tt_avatar_'].forEach(prefix=>localStorage.removeItem(prefix+uid));
+  logActivity(`Admin ลบ user: ${uid}`);
   let users=ls('tt_users')||[];
   users=users.filter(u=>u.id!==uid);
   ss('tt_users',users);
