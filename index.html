@@ -25,9 +25,9 @@
 .theme-dog-orange { --bg:#FFF8F0; --border:#FFBB85; --p1:#FF8C35; --p2:#FFBB85; --p3:#FFE0C2; --accent:#E07020; --accent-soft:#FFE8D0; --text:#4A2000; --text-s:#8A4A10; --theme-emoji:🐶; }
 .theme-dog-brown { --bg:#FDF5EE; --border:#D4A878; --p1:#A06030; --p2:#D4A878; --p3:#EDD8BE; --accent:#7A4010; --accent-soft:#F0DEC8; --text:#3C1A00; --text-s:#7A4520; --theme-emoji:🐕; }
 .theme-dog-sky { --bg:#F0F8FF; --border:#85C4F5; --p1:#3090E0; --p2:#85C4F5; --p3:#C2E4FA; --accent:#1060B0; --accent-soft:#D0E8FA; --text:#0A2A4A; --text-s:#2A60A0; --theme-emoji:🦮; }
-.theme-capy-yellow { --bg:#FFFCF0; --border:#FFE080; --p1:#E0B800; --p2:#FFE080; --p3:#FFF3C0; --accent:#B09000; --accent-soft:#FFF0A0; --text:#3A2C00; --text-s:#7A6000; --theme-emoji:🦔; }
-.theme-capy-green { --bg:#F5FCF0; --border:#A8D890; --p1:#58A838; --p2:#A8D890; --p3:#D4EFC4; --accent:#388818; --accent-soft:#D0ECC0; --text:#1A3A08; --text-s:#3A7020; --theme-emoji:🐾; }
-.theme-capy-brown { --bg:#FAF6F0; --border:#C8A888; --p1:#987040; --p2:#C8A888; --p3:#E8D8C4; --accent:#785030; --accent-soft:#EEE0D0; --text:#3A2010; --text-s:#7A5030; --theme-emoji:🦫; }
+.theme-capy-yellow { --bg:#FFFBF0; --border:#DEB887; --p1:#D4A054; --p2:#E8C080; --p3:#F5DFB0; --accent:#A0722A; --accent-soft:#F5E6C8; --text:#3A2800; --text-s:#7A5020; --theme-emoji:🌾; }
+.theme-capy-green  { --bg:#F2FBF2; --border:#90C878; --p1:#5AAA40; --p2:#90C878; --p3:#C8E8B8; --accent:#3A8820; --accent-soft:#D0ECC0; --text:#163010; --text-s:#306820; --theme-emoji:🌿; }
+.theme-capy-brown  { --bg:#FAF3EC; --border:#C49A6C; --p1:#9E6A38; --p2:#C49A6C; --p3:#E6CAA0; --accent:#7A4E20; --accent-soft:#EEE0CC; --text:#3A1E08; --text-s:#7A4E20; --theme-emoji:🍂; }
 
 * { box-sizing:border-box; margin:0; padding:0; }
 body { font-family:'Sarabun',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; transition:background .3s,color .3s; }
@@ -252,8 +252,7 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         <div class="form-group"><label>อีเมล หรือ ชื่อผู้ใช้</label><input type="text" id="l-id" placeholder="email หรือ username"></div>
         <div class="form-group"><label>รหัสผ่าน</label><input type="password" id="l-pw" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <button class="btn btn-primary btn-full mt-8" onclick="doLogin()">🔑 เข้าสู่ระบบ</button>
-        <p style="text-align:center;font-size:11px;color:var(--text-t);margin-top:12px;">admin demo: <b>admin</b> / <b>admin1234</b></p>
-        <p style="text-align:center;font-size:10px;color:var(--text-t);margin-top:4px;">⚠️ ครั้งแรกที่เปิด ระบบจะตั้งค่า admin อัตโนมัติ (ใช้เวลาไม่กี่วิ)</p>
+
       </div>
 
       <!-- Register -->
@@ -634,9 +633,9 @@ const THEMES = [
   {id:'dog-orange', label:'🐶 หมาส้ม',     emoji:'🐶', cls:'theme-dog-orange'},
   {id:'dog-brown',  label:'🐕 หมาน้ำตาล', emoji:'🐕', cls:'theme-dog-brown'},
   {id:'dog-sky',    label:'🦮 หมาฟ้า',     emoji:'🦮', cls:'theme-dog-sky'},
-  {id:'capy-yel',   label:'🦔 คาปิเหลือง', emoji:'🦔', cls:'theme-capy-yellow'},
-  {id:'capy-green', label:'🐾 คาปิเขียว',  emoji:'🐾', cls:'theme-capy-green'},
-  {id:'capy-brown', label:'🦫 คาปิน้ำตาล',emoji:'🦫', cls:'theme-capy-brown'},
+  {id:'capy-yel',   label:'ทองข้าว', emoji:'🌾', cls:'theme-capy-yellow'},
+  {id:'capy-green', label:'ทุ่งเขียว', emoji:'🌿', cls:'theme-capy-green'},
+  {id:'capy-brown', label:'ใบไม้แห้ง',emoji:'🍂', cls:'theme-capy-brown'},
 ];
 const DEF_PERIODS = [
   {id:'p1',label:'คาบที่ 1',s:'08:00',e:'09:00',b:false},
@@ -1510,23 +1509,88 @@ function adminDelUser(uid){
 // ===================================================
 // THEME
 // ===================================================
+// Capybara SVG (simple cute face) — used in theme cards
+const CAPY_SVG = `<svg viewBox="0 0 40 36" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="20" cy="22" rx="16" ry="13" fill="#C49A6C"/>
+  <ellipse cx="20" cy="21" rx="14" ry="11" fill="#D4AA7C"/>
+  <ellipse cx="13" cy="16" rx="4" ry="5" fill="#C49A6C"/>
+  <ellipse cx="27" cy="16" rx="4" ry="5" fill="#C49A6C"/>
+  <circle cx="14" cy="19" r="2.5" fill="#2A1A0A"/>
+  <circle cx="26" cy="19" r="2.5" fill="#2A1A0A"/>
+  <circle cx="14.8" cy="18.3" r="0.8" fill="#fff"/>
+  <circle cx="26.8" cy="18.3" r="0.8" fill="#fff"/>
+  <ellipse cx="20" cy="25" rx="5" ry="3" fill="#B8865A"/>
+  <ellipse cx="20" cy="25.5" rx="3" ry="1.5" fill="#3A1A08" opacity="0.3"/>
+  <ellipse cx="16" cy="27" rx="1.5" ry="1" fill="#C49A6C"/>
+  <ellipse cx="24" cy="27" rx="1.5" ry="1" fill="#C49A6C"/>
+</svg>`;
+
+const CAT_SVG = `<svg viewBox="0 0 40 36" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="20" cy="23" rx="14" ry="12" fill="#F4A0B5"/>
+  <polygon points="8,14 5,4 14,12" fill="#F4A0B5"/>
+  <polygon points="32,14 35,4 26,12" fill="#F4A0B5"/>
+  <polygon points="9,13 6,6 14,12" fill="#FFD6E5"/>
+  <polygon points="31,13 34,6 26,12" fill="#FFD6E5"/>
+  <circle cx="15" cy="21" r="2.5" fill="#3D1A2A"/>
+  <circle cx="25" cy="21" r="2.5" fill="#3D1A2A"/>
+  <circle cx="15.8" cy="20.3" r="0.8" fill="#fff"/>
+  <circle cx="25.8" cy="20.3" r="0.8" fill="#fff"/>
+  <ellipse cx="20" cy="25" rx="2.5" ry="1.5" fill="#FF85A8"/>
+  <line x1="20" y1="25" x2="20" y2="28" stroke="#3D1A2A" stroke-width="0.8"/>
+</svg>`;
+
+const DOG_SVG = `<svg viewBox="0 0 40 36" width="36" height="36" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="20" cy="22" rx="14" ry="12" fill="#D4A878"/>
+  <ellipse cx="9" cy="20" rx="5" ry="7" fill="#C49060"/>
+  <ellipse cx="31" cy="20" rx="5" ry="7" fill="#C49060"/>
+  <circle cx="15" cy="20" r="2.5" fill="#2A1A08"/>
+  <circle cx="25" cy="20" r="2.5" fill="#2A1A08"/>
+  <circle cx="15.8" cy="19.3" r="0.8" fill="#fff"/>
+  <circle cx="25.8" cy="19.3" r="0.8" fill="#fff"/>
+  <ellipse cx="20" cy="26" rx="5" ry="3.5" fill="#C49060"/>
+  <ellipse cx="20" cy="26" rx="3" ry="2" fill="#FF9B85"/>
+</svg>`;
+
+function getAnimalSVG(themeId, color1, color2){
+  if(themeId.startsWith('cat')) return CAT_SVG.replace(/#F4A0B5/g,color1).replace(/#FFD6E5/g,color2);
+  if(themeId.startsWith('dog')) return DOG_SVG.replace(/#D4A878/g,color1).replace(/#C49060/g,color2);
+  return CAPY_SVG.replace(/#C49A6C/g,color1).replace(/#D4AA7C/g,color2);
+}
+
 function buildThemeGrid(){
   const groups=[
-    {label:'🐱 แมว (Cat)',themes:THEMES.slice(0,3)},
-    {label:'🐶 หมา (Dog)',themes:THEMES.slice(3,6)},
-    {label:'🦫 คาปิบาร่า',themes:THEMES.slice(6,9)},
+    {label:'🐱 แมว (Cat)',   themes:THEMES.slice(0,3)},
+    {label:'🐶 หมา (Dog)',   themes:THEMES.slice(3,6)},
+    {label:'🦫 คาปิบาร่า',  themes:THEMES.slice(6,9)},
   ];
+  // Color pairs for SVG recolor [primary, secondary]
+  const themeColors={
+    'cat-pink':   ['#FF85A8','#FFD6E5'],
+    'cat-purple': ['#C4A8E8','#E2D4F5'],
+    'cat-mint':   ['#3DB887','#C2F0DB'],
+    'dog-orange': ['#FF8C35','#FFE0C2'],
+    'dog-brown':  ['#A06030','#EDD8BE'],
+    'dog-sky':    ['#3090E0','#C2E4FA'],
+    'capy-yel':   ['#D4A054','#F5DFB0'],
+    'capy-green': ['#5AAA40','#C8E8B8'],
+    'capy-brown': ['#9E6A38','#E6CAA0'],
+  };
   const cur=ls('tt_theme_'+CU?.id)||'cat-purple';
   document.getElementById('theme-grid-container').innerHTML=groups.map(g=>`
-    <div style="margin-bottom:16px;">
-      <div style="font-size:13px;font-weight:700;color:var(--text-s);margin-bottom:8px;">${g.label}</div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
-        ${g.themes.map(t=>`
-          <div class="theme-card${t.id===cur?' sel':''}" onclick="applyTheme('${t.id}',true)">
-            <div class="theme-card-icon">${t.emoji}</div>
-            <div class="theme-card-name">${t.label}</div>
-            ${t.id===cur?'<div style="font-size:10px;color:var(--accent);margin-top:2px;">✓ ใช้งานอยู่</div>':''}
-          </div>`).join('')}
+    <div style="margin-bottom:18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--text-s);margin-bottom:10px;padding-bottom:4px;border-bottom:1px solid var(--border);">${g.label}</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+        ${g.themes.map(t=>{
+          const [c1,c2]=themeColors[t.id]||['#CCC','#EEE'];
+          const svg=getAnimalSVG(t.id,c1,c2);
+          const isActive=t.id===cur;
+          return`<div class="theme-card${isActive?' sel':''}" onclick="applyTheme('${t.id}',true)"
+            style="${isActive?'border-color:var(--accent);box-shadow:0 0 0 2px var(--accent);':''}">
+            <div style="display:flex;justify-content:center;margin-bottom:6px;">${svg}</div>
+            <div class="theme-card-name" style="text-align:center;font-size:11px;">${t.label}</div>
+            ${isActive?'<div style="font-size:10px;color:var(--accent);text-align:center;margin-top:3px;font-weight:700;">✓ ใช้งานอยู่</div>':''}
+          </div>`;
+        }).join('')}
       </div>
     </div>`).join('');
 }
