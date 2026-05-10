@@ -203,7 +203,52 @@ table.timetable th { background:linear-gradient(135deg,var(--p1),var(--p2)); col
 .ticket-time { font-size:11px; color:var(--text-t); }
 .ticket-msg { font-size:13px; color:var(--text); line-height:1.5; }
 
-/* ===== CALENDAR ===== */
+/* ===== NEW FEATURES v8 ===== */
+/* Announcement banner */
+.announce-bar { background:linear-gradient(135deg,var(--p1),var(--p2)); color:#fff; padding:10px 20px; font-size:13px; font-weight:600; display:none; align-items:center; gap:10px; position:sticky; top:56px; z-index:150; }
+.announce-bar.show { display:flex; }
+.announce-bar-close { margin-left:auto; background:rgba(255,255,255,.25); border:none; color:#fff; border-radius:50%; width:22px; height:22px; cursor:pointer; font-size:12px; display:flex; align-items:center; justify-content:center; }
+/* Homework tracker */
+.hw-list { display:flex; flex-direction:column; gap:8px; }
+.hw-item { background:var(--card); border-radius:10px; border:1.5px solid var(--border); padding:10px 14px; display:flex; align-items:center; gap:10px; transition:all .15s; }
+.hw-item.done { opacity:.55; }
+.hw-item.done .hw-text { text-decoration:line-through; color:var(--text-t); }
+.hw-check { width:18px; height:18px; border-radius:5px; border:2px solid var(--accent); cursor:pointer; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:transparent; transition:all .15s; }
+.hw-check.checked { background:var(--accent); color:#fff; }
+.hw-text { font-size:13px; font-weight:600; color:var(--text); flex:1; }
+.hw-meta { font-size:11px; color:var(--text-t); white-space:nowrap; }
+.hw-badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:10px; font-weight:700; margin-left:4px; }
+/* Admin tickets v2 */
+.ticket-card-v2 { border-radius:12px; border:1.5px solid var(--border); padding:14px 16px; margin-bottom:10px; background:var(--card); transition:all .2s; }
+.ticket-card-v2:hover { box-shadow:0 4px 16px var(--shadow); border-color:var(--accent); }
+.ticket-card-v2.unread { border-left:4px solid var(--accent); }
+.ticket-status { display:inline-block; padding:3px 10px; border-radius:20px; font-size:11px; font-weight:700; }
+.ticket-open { background:#FFE5E5; color:#C0392B; }
+.ticket-resolved { background:#E5FFF0; color:var(--success); }
+/* Admin analytics */
+.chart-bar-wrap { display:flex; flex-direction:column; gap:6px; }
+.chart-bar-row { display:flex; align-items:center; gap:8px; font-size:12px; }
+.chart-bar-label { width:80px; text-align:right; color:var(--text-s); font-size:11px; flex-shrink:0; }
+.chart-bar-outer { flex:1; background:var(--bg); border-radius:20px; height:18px; overflow:hidden; }
+.chart-bar-inner { height:100%; border-radius:20px; background:linear-gradient(90deg,var(--p1),var(--p2)); transition:width .6s ease; }
+.chart-bar-val { width:32px; font-size:11px; font-weight:700; color:var(--accent); }
+/* User ban status */
+.badge-banned { background:#FFE5E5; color:#C0392B; }
+.status-dot { width:8px; height:8px; border-radius:50%; display:inline-block; margin-right:4px; }
+.status-active { background:#2ECC71; }
+.status-banned { background:#E74C3C; }
+/* Form validation */
+.form-field-wrap { position:relative; }
+input.field-error, select.field-error { border-color:#E74C3C !important; background:#FFF5F5 !important; }
+input.field-ok { border-color:#2ECC71 !important; }
+.field-error-msg { font-size:11px; color:#E74C3C; margin-top:3px; display:none; }
+.field-error-msg.show { display:block; }
+/* Reminder bell */
+.reminder-badge { position:absolute; top:-4px; right:-4px; width:16px; height:16px; background:var(--danger); border-radius:50%; font-size:9px; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; }
+/* Export image preview */
+.export-preview { border-radius:12px; overflow:hidden; border:2px solid var(--border); margin-top:12px; max-width:100%; }
+/* Quota badge */
+.quota-badge { display:inline-block; padding:2px 8px; border-radius:20px; font-size:11px; font-weight:700; background:var(--accent-soft); color:var(--accent); }
 .cal-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
 .cal-nav-btn { width:36px; height:36px; border-radius:50%; border:1.5px solid var(--border); background:var(--card); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; }
 .cal-nav-btn:hover { background:var(--accent-soft); border-color:var(--accent); }
@@ -269,6 +314,11 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
 
 <!-- Offline bar -->
 <div class="offline-bar" id="offline-bar">📡 ออฟไลน์อยู่ — ข้อมูลจะอัปเดตเมื่อกลับมาออนไลน์</div>
+<div class="announce-bar" id="announce-bar">
+  <span>📢</span>
+  <span id="announce-text">ข้อความประกาศ</span>
+  <button class="announce-bar-close" onclick="document.getElementById('announce-bar').classList.remove('show')">✕</button>
+</div>
 
 <!-- ===== AUTH SCREEN ===== -->
 <div id="auth-screen">
@@ -295,24 +345,56 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
 
       <!-- Register -->
       <div id="tab-register" class="hidden">
-        <div class="form-row">
-          <div class="form-group"><label>ชื่อผู้ใช้ *</label><input type="text" id="r-user" placeholder="username"></div>
-          <div class="form-group"><label>อีเมล *</label><input type="email" id="r-email" placeholder="email@example.com"></div>
+        <div style="background:#FFF8E1;border-radius:8px;padding:10px 12px;font-size:12px;color:#7A5C00;margin-bottom:12px;border:1px solid #FFD54F;">
+          ⚠️ <b>โปรดตรวจสอบข้อมูลให้ถูกต้อง</b> ข้อมูลที่บันทึกแล้วบางส่วนจะไม่สามารถแก้ไขได้ภายหลัง
         </div>
-        <div class="form-group"><label>รหัสผ่าน * (≥6 ตัว)</label><input type="password" id="r-pw" placeholder="รหัสผ่าน"></div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>ชื่อผู้ใช้ *</label>
+            <input type="text" id="r-user" placeholder="username (a-z, 0-9, _)">
+            <div class="field-error-msg"></div>
+          </div>
+          <div class="form-group">
+            <label>อีเมล *</label>
+            <input type="email" id="r-email" placeholder="email@example.com">
+            <div class="field-error-msg"></div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>รหัสผ่าน * <span style="color:var(--text-t);font-weight:400;">(≥8 ตัว มีตัวอักษร+ตัวเลข)</span></label>
+          <input type="password" id="r-pw" placeholder="เช่น MyPass123">
+          <div class="field-error-msg"></div>
+          <div id="r-pw-strength" style="margin-top:3px;font-size:11px;"></div>
+        </div>
         <hr class="soft">
         <div class="form-row">
-          <div class="form-group"><label>ชื่อ-นามสกุล *</label><input type="text" id="r-name" placeholder="ชื่อเต็ม"></div>
-          <div class="form-group"><label>ชื่อโรงเรียน *</label><input type="text" id="r-school" placeholder="ชื่อโรงเรียน"></div>
+          <div class="form-group">
+            <label>ชื่อ-นามสกุล *</label>
+            <input type="text" id="r-name" placeholder="ชื่อเต็ม">
+            <div class="field-error-msg"></div>
+          </div>
+          <div class="form-group">
+            <label>ชื่อโรงเรียน *</label>
+            <input type="text" id="r-school" placeholder="ชื่อโรงเรียน">
+            <div class="field-error-msg"></div>
+          </div>
         </div>
         <div class="form-row">
-          <div class="form-group"><label>ชั้นเรียน *</label><input type="text" id="r-grade" placeholder="เช่น ม.3/1"></div>
+          <div class="form-group">
+            <label>ชั้นเรียน *</label>
+            <input type="text" id="r-grade" placeholder="เช่น ม.3/1">
+            <div class="field-error-msg"></div>
+          </div>
           <div class="form-group"><label>ที่อยู่</label><input type="text" id="r-addr" placeholder="บ้านเลขที่ ถนน"></div>
         </div>
         <div class="form-row-3">
           <div class="form-group"><label>ตำบล</label><input type="text" id="r-sub" placeholder="ตำบล"></div>
           <div class="form-group"><label>อำเภอ</label><input type="text" id="r-dist" placeholder="อำเภอ"></div>
           <div class="form-group"><label>จังหวัด</label><input type="text" id="r-prov" placeholder="จังหวัด"></div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:8px;margin:10px 0;font-size:12px;color:var(--text-s);">
+          <input type="checkbox" id="r-confirm" style="width:auto;margin-top:2px;">
+          <label for="r-confirm" style="margin:0;cursor:pointer;">ฉันได้ตรวจสอบข้อมูลทั้งหมดแล้ว และยืนยันว่าถูกต้อง</label>
         </div>
         <button class="btn btn-primary btn-full mt-8" onclick="doRegister()">✨ สมัครสมาชิก</button>
       </div>
@@ -349,6 +431,8 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         <div class="nav-item active" data-p="dashboard" onclick="goPage('dashboard')"><span class="nav-icon">🏠</span> แดชบอร์ด</div>
         <div class="nav-item" data-p="timetable" onclick="goPage('timetable')"><span class="nav-icon">📅</span> ตารางเรียน</div>
         <div class="nav-item" data-p="calendar" onclick="goPage('calendar')"><span class="nav-icon">🗓️</span> ปฏิทิน & โน๊ต</div>
+        <div class="nav-item" data-p="homework" onclick="goPage('homework')"><span class="nav-icon">📝</span> การบ้าน & ทดสอบ</div>
+        <div class="nav-item" data-p="reminders" onclick="goPage('reminders')"><span class="nav-icon">🔔</span> แจ้งเตือนคาบเรียน</div>
         <div class="nav-item" data-p="profile" onclick="goPage('profile')"><span class="nav-icon">👤</span> ข้อมูลส่วนตัว</div>
         <div class="nav-item" data-p="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span> ตั้งค่าตาราง</div>
         <div class="nav-item" data-p="report" onclick="goPage('report')"><span class="nav-icon">📢</span> แจ้งปัญหา</div>
@@ -385,6 +469,7 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         <div class="tt-page-header">
           <h2 id="tt-page-title">📅 ตารางเรียน</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="openModal('modal-export')">📸 Export รูป</button>
             <button class="btn btn-ghost btn-sm" onclick="exportPDF('A4',this)">📄 A4</button>
             <button class="btn btn-ghost btn-sm" onclick="exportPDF('A5',this)">📄 A5</button>
             <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️</button>
@@ -509,50 +594,114 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         </div>
       </div>
 
-      <!-- ADMIN PAGE -->
+      <!-- HOMEWORK TRACKER PAGE -->
+      <div id="page-homework" class="content-pad hidden">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+          <h2 style="flex:1;">📝 การบ้าน & ทดสอบ</h2>
+          <button class="btn btn-primary btn-sm" onclick="openHWModal()">+ เพิ่มรายการ</button>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;" id="hw-filter-bar">
+          <button class="btn btn-accent btn-sm" onclick="hwFilter('all')">ทั้งหมด</button>
+          <button class="btn btn-ghost btn-sm" onclick="hwFilter('pending')">⏳ ยังไม่เสร็จ</button>
+          <button class="btn btn-ghost btn-sm" onclick="hwFilter('done')">✅ เสร็จแล้ว</button>
+          <button class="btn btn-ghost btn-sm" onclick="hwFilter('exam')">📋 ทดสอบ</button>
+        </div>
+        <div class="hw-list" id="hw-list"></div>
+      </div>
+
+      <!-- REMINDERS PAGE -->
+      <div id="page-reminders" class="content-pad hidden">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:16px;">
+          <h2 style="flex:1;">🔔 แจ้งเตือนก่อนเรียน</h2>
+          <div id="notif-status-badge"></div>
+        </div>
+        <div class="card mb-16" id="notif-permission-card">
+          <div class="card-title mb-8">🔔 ขอสิทธิ์แจ้งเตือน</div>
+          <p style="font-size:13px;color:var(--text-s);margin-bottom:12px;">ระบบจะแจ้งเตือนก่อนเริ่มคาบเรียน 5–10 นาที ผ่าน Push Notification บนอุปกรณ์ของคุณ</p>
+          <button class="btn btn-primary" onclick="requestNotifPermission()">🔔 เปิดการแจ้งเตือน</button>
+        </div>
+        <div class="card">
+          <div class="card-title mb-12">⚙️ ตั้งค่าการแจ้งเตือน</div>
+          <div class="form-group">
+            <label>แจ้งเตือนก่อนเรียน</label>
+            <select id="notif-minutes">
+              <option value="5">5 นาทีก่อนเรียน</option>
+              <option value="10" selected>10 นาทีก่อนเรียน</option>
+              <option value="15">15 นาทีก่อนเรียน</option>
+              <option value="30">30 นาทีก่อนเรียน</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex;align-items:center;gap:10px;">
+            <label style="margin:0;">เปิดการแจ้งเตือน</label>
+            <input type="checkbox" id="notif-enabled" style="width:auto;" onchange="saveReminderSettings()">
+          </div>
+          <div id="reminder-preview" style="margin-top:14px;"></div>
+          <button class="btn btn-ghost btn-sm mt-8" onclick="testReminder()">🧪 ทดสอบแจ้งเตือน</button>
+        </div>
+      </div>
       <div id="page-admin" class="content-pad hidden">
         <div class="page-title">👑 Admin Panel</div>
 
         <!-- Admin tabs -->
         <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;" id="admin-tabs">
           <button class="btn btn-accent btn-sm" onclick="adminTab('overview')">📊 ภาพรวม</button>
-          <button class="btn btn-ghost btn-sm" onclick="adminTab('users')">👥 ผู้ใช้</button>
+          <button class="btn btn-ghost btn-sm" onclick="adminTab('users')">👥 จัดการ User</button>
           <button class="btn btn-ghost btn-sm" onclick="adminTab('tickets')">📢 แจ้งปัญหา</button>
-          <button class="btn btn-ghost btn-sm" onclick="adminTab('test-tt')">🧪 ทดสอบตาราง</button>
+          <button class="btn btn-ghost btn-sm" onclick="adminTab('analytics')">📈 Analytics</button>
+          <button class="btn btn-ghost btn-sm" onclick="adminTab('announce')">📣 ประกาศ</button>
+          <button class="btn btn-ghost btn-sm" onclick="adminTab('test-tt')">🧪 ทดสอบ</button>
         </div>
-
-        <!-- Overview -->
         <div id="atab-overview">
           <div class="admin-stat-grid" id="admin-stats"></div>
-          <div class="card mt-16">
-            <div class="card-header"><div class="card-title">🕐 กิจกรรมล่าสุด</div></div>
-            <div id="admin-activity"></div>
-          </div>
+          <div class="card mt-16"><div class="card-header"><div class="card-title">🕐 กิจกรรมล่าสุด</div></div><div id="admin-activity"></div></div>
         </div>
-
-        <!-- Users -->
         <div id="atab-users" class="hidden">
           <div class="card">
-            <div class="card-header"><div class="card-title">👥 รายชื่อสมาชิก</div></div>
+            <div class="card-header">
+              <div class="card-title">👥 รายชื่อสมาชิก</div>
+              <input type="text" id="user-search" placeholder="🔍 ค้นหา..." style="width:180px;padding:6px 12px;font-size:12px;" oninput="renderAdminUsers()">
+            </div>
             <div class="scroll-x"><table class="data-table" id="admin-user-table"></table></div>
           </div>
         </div>
-
-        <!-- Tickets -->
         <div id="atab-tickets" class="hidden">
+          <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;">
+            <button class="btn btn-ghost btn-sm" onclick="filterTickets('all')">ทั้งหมด</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterTickets('open')">🔴 ยังไม่แก้</button>
+            <button class="btn btn-ghost btn-sm" onclick="filterTickets('resolved')">✅ แก้แล้ว</button>
+          </div>
+          <div id="admin-tickets"></div>
+        </div>
+        <div id="atab-analytics" class="hidden">
+          <div class="admin-stat-grid" id="analytics-stats"></div>
+          <div class="card mt-16"><div class="card-header"><div class="card-title">👥 สมาชิกใหม่ 7 วันล่าสุด</div></div><div class="chart-bar-wrap mt-8" id="chart-signups"></div></div>
+          <div class="card mt-16"><div class="card-header"><div class="card-title">📅 ตารางที่สร้างต่อ User</div></div><div id="chart-tts" class="mt-8"></div></div>
+        </div>
+        <div id="atab-announce" class="hidden">
           <div class="card">
-            <div class="card-header"><div class="card-title">📢 รายงานปัญหา</div></div>
-            <div id="admin-tickets"></div>
+            <div class="card-title mb-12">📣 ส่งประกาศถึงผู้ใช้ทุกคน</div>
+            <div class="form-group"><label>ข้อความประกาศ</label><input type="text" id="ann-title" placeholder="เช่น แจ้งปิดปรับปรุงระบบ" maxlength="100"></div>
+            <div class="form-group">
+              <label>สีแถบ</label>
+              <select id="ann-color">
+                <option value="gradient">🌈 ไล่สี</option>
+                <option value="#E53935">🔴 แดง (ฉุกเฉิน)</option>
+                <option value="#FB8C00">🟠 ส้ม (คำเตือน)</option>
+                <option value="#43A047">🟢 เขียว</option>
+                <option value="#1E88E5">🔵 น้ำเงิน</option>
+              </select>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-primary" onclick="sendAnnouncement()">📣 ส่งประกาศ</button>
+              <button class="btn btn-danger" onclick="clearAnnouncement()">🗑️ ล้างประกาศ</button>
+            </div>
+            <div id="ann-msg" class="mt-8"></div>
+            <hr class="soft">
+            <div class="card-title mb-8 mt-8">📋 ประวัติประกาศ</div>
+            <div id="ann-history"></div>
           </div>
         </div>
-
-        <!-- Test timetable -->
-        <div id="atab-test-tt" class="hidden">
-          <div class="card mb-12">
-            <p style="font-size:13px;color:var(--text-s);">หน้าต่างทดสอบสำหรับ admin — ทดลองสร้างตารางได้เหมือน user ทั่วไป</p>
-          </div>
-          <div id="admin-tt-area"></div>
-        </div>
+        <div id="atab-test-tt" class="hidden"><div id="admin-tt-area"></div></div>
       </div>
 
     </div><!-- end main-content -->
@@ -671,21 +820,121 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
   </div>
 </div>
 
-<!-- Admin Edit User Modal -->
-<div class="modal-bg" id="modal-edit-user">
-  <div class="modal">
-    <h3>✏️ แก้ไขข้อมูล User</h3>
-    <input type="hidden" id="eu-id">
+<!-- Homework Modal -->
+<div class="modal-bg" id="modal-hw">
+  <div class="modal" style="max-width:400px;">
+    <h3 id="hw-modal-h">📝 เพิ่มการบ้าน / ทดสอบ</h3>
+    <input type="hidden" id="hw-edit-id">
+    <div class="form-group"><label>หัวข้อ *</label><input type="text" id="hw-title" placeholder="เช่น ส่งการบ้านคณิต บท 3"></div>
     <div class="form-row">
-      <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="eu-name"></div>
-      <div class="form-group"><label>โรงเรียน</label><input type="text" id="eu-school"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-group"><label>ชั้นเรียน</label><input type="text" id="eu-grade"></div>
-      <div class="form-group"><label>สิทธิ์</label>
-        <select id="eu-role"><option value="user">User</option><option value="admin">Admin</option></select>
+      <div class="form-group">
+        <label>วิชา</label>
+        <select id="hw-subj"><option value="">-- เลือกวิชา --</option></select>
+      </div>
+      <div class="form-group">
+        <label>ประเภท</label>
+        <select id="hw-type">
+          <option value="hw">📖 การบ้าน</option>
+          <option value="exam">📋 ทดสอบ/สอบ</option>
+          <option value="project">🎯 โปรเจกต์</option>
+          <option value="other">📌 อื่นๆ</option>
+        </select>
       </div>
     </div>
+    <div class="form-row">
+      <div class="form-group"><label>วันกำหนดส่ง</label><input type="date" id="hw-due"></div>
+      <div class="form-group">
+        <label>ความสำคัญ</label>
+        <select id="hw-priority">
+          <option value="normal">🟡 ปกติ</option>
+          <option value="high">🔴 ด่วน</option>
+          <option value="low">🟢 ไม่รีบ</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>รายละเอียด</label><textarea id="hw-detail" placeholder="รายละเอียดเพิ่มเติม..." maxlength="300"></textarea></div>
+    <div id="hw-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-hw')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="saveHW()">💾 บันทึก</button>
+    </div>
+  </div>
+</div>
+
+<!-- Export Image Modal -->
+<div class="modal-bg" id="modal-export">
+  <div class="modal" style="max-width:420px;">
+    <h3>📸 Export ตาราง</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <button class="btn btn-primary" onclick="exportImage('wallpaper-mobile')">📱 วอลเปเปอร์มือถือ<br><span style="font-size:10px;font-weight:400;">(1080×1920)</span></button>
+      <button class="btn btn-primary" onclick="exportImage('wallpaper-desktop')">🖥️ วอลเปเปอร์เดสก์ท็อป<br><span style="font-size:10px;font-weight:400;">(1920×1080)</span></button>
+      <button class="btn btn-ghost" onclick="exportImage('png-square')">🖼️ รูปภาพ PNG<br><span style="font-size:10px;font-weight:400;">(สัดส่วนตาราง)</span></button>
+      <button class="btn btn-ghost" onclick="exportImage('share')">🔗 แชร์ลิงก์<br><span style="font-size:10px;font-weight:400;">(คัดลอก URL)</span></button>
+    </div>
+    <div id="export-preview-area"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-export')">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<!-- Admin Edit User (upgraded) Modal -->
+<div class="modal-bg" id="modal-edit-user">
+  <div class="modal" style="max-width:480px;">
+    <h3>⚙️ จัดการ User</h3>
+    <input type="hidden" id="eu-id">
+    <div style="display:flex;gap:4px;background:var(--bg);border-radius:10px;padding:4px;margin-bottom:16px;">
+      <button class="btn btn-sm btn-primary" id="eu-tab-info-btn" onclick="switchEUTab('info')" style="flex:1;border-radius:7px;">📋 ข้อมูล</button>
+      <button class="btn btn-sm btn-ghost" id="eu-tab-access-btn" onclick="switchEUTab('access')" style="flex:1;border-radius:7px;">🔐 สิทธิ์ & แบน</button>
+      <button class="btn btn-sm btn-ghost" id="eu-tab-quota-btn" onclick="switchEUTab('quota')" style="flex:1;border-radius:7px;">📊 Quota</button>
+    </div>
+    <div id="eu-tab-info">
+      <div class="form-row">
+        <div class="form-group"><label>ชื่อ-นามสกุล</label><input type="text" id="eu-name"></div>
+        <div class="form-group"><label>โรงเรียน</label><input type="text" id="eu-school"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>ชั้นเรียน</label><input type="text" id="eu-grade"></div>
+        <div class="form-group"><label>สิทธิ์</label>
+          <select id="eu-role"><option value="user">👤 User</option><option value="admin">👑 Admin</option></select>
+        </div>
+      </div>
+    </div>
+    <div id="eu-tab-access" class="hidden">
+      <div class="form-group">
+        <label>สถานะบัญชี</label>
+        <select id="eu-status">
+          <option value="active">✅ ใช้งานได้ปกติ</option>
+          <option value="banned">🚫 แบน (ห้ามเข้าระบบ)</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>เหตุผลการแบน (ถ้ามี)</label>
+        <input type="text" id="eu-ban-reason" placeholder="เช่น ละเมิดกฎการใช้งาน">
+      </div>
+      <hr class="soft">
+      <div class="form-group">
+        <label>รีเซ็ตรหัสผ่านใหม่</label>
+        <input type="text" id="eu-new-pw-admin" placeholder="พิมพ์รหัสผ่านใหม่ (ทิ้งว่างถ้าไม่เปลี่ยน)" maxlength="50">
+        <div class="form-hint">⚠️ User ต้องเปลี่ยนรหัสผ่านใหม่เองหลังจากนี้</div>
+      </div>
+    </div>
+    <div id="eu-tab-quota" class="hidden">
+      <div class="form-group">
+        <label>โควตาตาราง (ค่าปกติ = 3)</label>
+        <select id="eu-quota">
+          <option value="3">3 ตาราง (ปกติ)</option>
+          <option value="5">5 ตาราง (VIP)</option>
+          <option value="10">10 ตาราง (พิเศษ)</option>
+          <option value="99">ไม่จำกัด (Admin)</option>
+        </select>
+      </div>
+      <div class="form-hint">📌 ใช้สำหรับ User พิเศษหรือกิจกรรมพิเศษ</div>
+      <div style="margin-top:12px;padding:10px;border-radius:8px;background:var(--accent-soft);font-size:12px;color:var(--accent);">
+        <b>ตารางที่สร้างแล้ว:</b> <span id="eu-quota-current">-</span>
+      </div>
+    </div>
+    <div id="eu-msg" class="mt-8"></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modal-edit-user')">ยกเลิก</button>
       <button class="btn btn-primary" onclick="saveEditUser()">💾 บันทึก</button>
@@ -974,6 +1223,9 @@ async function doLogin(){
   initApp();
 }
 async function doRegister(){
+  // Validate all fields with visual feedback
+  if(!validateAllRegisterFields())return authMsg('กรุณากรอกข้อมูลในช่องที่เป็นสีแดงให้ถูกต้อง');
+  if(!document.getElementById('r-confirm').checked)return authMsg('กรุณายืนยันว่าตรวจสอบข้อมูลแล้ว');
   const rawUsername=document.getElementById('r-user').value;
   const rawEmail=document.getElementById('r-email').value;
   const pw=document.getElementById('r-pw').value;
@@ -984,7 +1236,8 @@ async function doRegister(){
   const grade=sanitize(document.getElementById('r-grade').value);
   if(!username||!email||!pw||!name||!school||!grade)return authMsg('กรุณากรอกข้อมูลที่มี * ให้ครบ');
   if(username!==rawUsername.trim().toLowerCase())return authMsg('ชื่อผู้ใช้ใช้ได้เฉพาะตัวอักษร ตัวเลข _ - และภาษาไทย');
-  if(pw.length<6)return authMsg('รหัสผ่านต้องมีอย่างน้อย 6 ตัวอักษร');
+  // SEC: Password must have letters+numbers, min 8
+  if(!/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(pw))return authMsg('รหัสผ่านต้องมีอย่างน้อย 8 ตัว และมีทั้งตัวอักษรและตัวเลข');
   if(pw.length>128)return authMsg('รหัสผ่านยาวเกินไป');
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))return authMsg('รูปแบบอีเมลไม่ถูกต้อง');
   const users=ls('tt_users')||[];
@@ -1000,7 +1253,7 @@ async function doRegister(){
     sub:sanitize(document.getElementById('r-sub').value),
     dist:sanitize(document.getElementById('r-dist').value),
     prov:sanitize(document.getElementById('r-prov').value),
-    role:'user', createdAt:Date.now()
+    role:'user', status:'active', createdAt:Date.now()
   };
   users.push(nu); ss('tt_users',users);
   const sess=createSession(nu); CU=sess;
@@ -1035,14 +1288,19 @@ function startSessionCheck(){
 }
 function initApp(){
   if(!CU)return;
-  // Re-verify role from source of truth before rendering
   const users=ls('tt_users')||[];
   const realUser=users.find(u=>u.id===CU.id);
   if(!realUser){doLogout();return;}
-  if(realUser.role!==CU.role){
-    // Role changed by admin — update session
-    const newSess=createSession(realUser);CU=newSess;
+  // SEC: check if banned
+  if(realUser.status==='banned'){
+    localStorage.removeItem('tt_session');
+    localStorage.removeItem('tt_token');
+    CU=null;
+    document.getElementById('auth-screen').style.display='flex';
+    authMsg(`🚫 บัญชีนี้ถูกระงับการใช้งาน${realUser.banReason?' เหตุผล: '+realUser.banReason:''}`);
+    return;
   }
+  if(realUser.role!==CU.role){const newSess=createSession(realUser);CU=newSess;}
   document.getElementById('auth-screen').style.display='none';
   document.getElementById('main-screen').style.display='flex';
   const n=CU.name||CU.username;
@@ -1051,20 +1309,22 @@ function initApp(){
   document.getElementById('sb-avatar').textContent=n.charAt(0).toUpperCase();
   document.getElementById('sb-name').textContent=n;
   document.getElementById('sb-role').textContent=CU.role==='admin'?'👑 ผู้ดูแลระบบ':'👤 นักเรียน';
-  // Show/hide admin nav — always derive from verified role
   document.getElementById('nav-admin').style.display=CU.role==='admin'?'flex':'none';
-  // Theme
   const savedTheme=ls('tt_theme_'+CU.id)||'cat-purple';
   applyTheme(savedTheme,false);
-  // Ensure user has a timetable list
   if(!ls('tt_list_'+CU.id)) ss('tt_list_'+CU.id,[]);
   if(!ls('tt_active_'+CU.id)) ss('tt_active_'+CU.id,null);
-  // Mobile sidebar toggle
   if(window.innerWidth<=700) document.getElementById('sidebar-toggle').style.display='flex';
   renderDashboard();
   updateAdminBadge();
   startSessionCheck();
   loadAvatarFromStorage();
+  loadAnnouncement();
+  // Start reminders if enabled
+  const rSett=getReminderSettings();
+  if(rSett.enabled)startReminderCheck();
+  // Attach register form validation
+  attachRegisterValidation();
 }
 
 // ===================================================
@@ -1087,7 +1347,9 @@ function goPage(p){
   if(p==='profile')renderProfile();
   if(p==='settings')renderSettings();
   if(p==='admin'&&CU.role==='admin'){renderAdmin();adminTab('overview');}
-  if(p==='calendar'){ renderCalendar(); }
+  if(p==='calendar'){renderCalendar();}
+  if(p==='homework'){renderHWList();}
+  if(p==='reminders'){updateNotifStatus();renderReminderPreview();}
   closeSidebar();
 }
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
@@ -1117,6 +1379,8 @@ function renderDashboard(){
     <div class="qa-btn" onclick="${tts.length<3?"openNewTTModal()":"alert('ครบ 3 ตารางแล้ว')"}"><div class="qa-icon">➕</div><div class="qa-label">สร้างตาราง</div></div>
     <div class="qa-btn" onclick="goPage('settings')"><div class="qa-icon">⚙️</div><div class="qa-label">ตั้งค่า</div></div>
     <div class="qa-btn" onclick="goPage('calendar')"><div class="qa-icon">🗓️</div><div class="qa-label">ปฏิทิน</div></div>
+    <div class="qa-btn" onclick="goPage('homework')"><div class="qa-icon">📝</div><div class="qa-label">การบ้าน</div></div>
+    <div class="qa-btn" onclick="goPage('reminders')"><div class="qa-icon">🔔</div><div class="qa-label">แจ้งเตือน</div></div>
     <div class="qa-btn" onclick="openModal('modal-theme')"><div class="qa-icon">🎨</div><div class="qa-label">เปลี่ยนธีม</div></div>
     ${CU.role==='admin'?`<div class="qa-btn" onclick="goPage('admin')"><div class="qa-icon">👑</div><div class="qa-label">Admin</div></div>`:''}`;
   // TT list
@@ -1329,7 +1593,11 @@ function createNewTT(){
   const name=document.getElementById('new-tt-name').value.trim();
   if(!name){document.getElementById('new-tt-msg').innerHTML='<div class="msg msg-err">กรุณาใส่ชื่อตาราง</div>';return;}
   const tts=ls('tt_list_'+CU.id)||[];
-  if(tts.length>=3){document.getElementById('new-tt-msg').innerHTML='<div class="msg msg-err">ครบ 3 ตารางแล้ว</div>';return;}
+  // Respect quotaOverride from admin
+  const users=ls('tt_users')||[];
+  const me=users.find(u=>u.id===CU.id);
+  const quota=me?.quotaOverride||3;
+  if(tts.length>=quota){document.getElementById('new-tt-msg').innerHTML=`<div class="msg msg-err">สร้างตารางได้สูงสุด ${quota} ตาราง</div>`;return;}
   const tt={id:'tt'+Date.now(),name,createdAt:Date.now()};
   tts.push(tt);ss('tt_list_'+CU.id,tts);
   activeTTId=tt.id;ss('tt_active_'+CU.id,tt.id);
@@ -1694,21 +1962,7 @@ function updateAdminBadge(){
 // ADMIN
 // ===================================================
 let currentAdminTab='overview';
-function adminTab(t){
-  if(!requireAdmin('adminTab'))return;
-  ['overview','users','tickets','test-tt'].forEach(tab=>{
-    document.getElementById('atab-'+tab).classList.toggle('hidden',tab!==t);
-  });
-  document.querySelectorAll('#admin-tabs .btn').forEach((b,i)=>{
-    const tabs=['overview','users','tickets','test-tt'];
-    b.className='btn btn-sm '+(tabs[i]===t?'btn-accent':'btn-ghost');
-  });
-  currentAdminTab=t;
-  if(t==='overview')renderAdminOverview();
-  if(t==='users')renderAdminUsers();
-  if(t==='tickets')renderAdminTickets();
-  if(t==='test-tt')renderAdminTestTT();
-}
+
 function renderAdmin(){
   if(!requireAdmin('renderAdmin'))return;
   renderAdminOverview();
@@ -1729,39 +1983,8 @@ function renderAdminOverview(){
       <span>${escH(a.msg)}</span><span style="color:var(--text-t);font-size:11px;white-space:nowrap;margin-left:8px;">${fmtDate(a.ts)}</span>
     </div>`).join('')||'<p style="color:var(--text-s);font-size:13px;">ยังไม่มีกิจกรรม</p>';
 }
-function renderAdminUsers(){
-  if(!requireAdmin('users'))return;
-  const users=ls('tt_users')||[];
-  document.getElementById('admin-user-table').innerHTML=`<thead><tr>
-    <th>ชื่อ</th><th>Username</th><th>โรงเรียน</th><th>ชั้น</th><th>จังหวัด</th><th>ตาราง</th><th>สิทธิ์</th><th>จัดการ</th>
-  </tr></thead><tbody>${users.map(u=>{
-    const ttCount=(ls('tt_list_'+u.id)||[]).length;
-    return`<tr>
-      <td>${escH(u.name||'-')}</td><td>${escH(u.username)}</td><td>${escH(u.school||'-')}</td>
-      <td>${escH(u.grade||'-')}</td><td>${escH(u.prov||'-')}</td>
-      <td>${ttCount}/3</td>
-      <td><span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role==='admin'?'👑 Admin':'👤 User'}</span></td>
-      <td style="display:flex;gap:4px;flex-wrap:wrap;">
-        <button class="btn btn-ghost btn-xs" onclick="openEditUserModal('${u.id}')">✏️</button>
-        ${u.id!==CU.id?`<button class="btn btn-danger btn-xs" onclick="adminDelUser('${u.id}')">🗑️</button>`:''}
-      </td>
-    </tr>`;}).join('')}</tbody>`;
-}
-function renderAdminTickets(){
-  if(!requireAdmin('tickets'))return;
-  const tickets=ls('tt_tickets')||[];
-  tickets.forEach((t,i)=>{if(!t.read){tickets[i].read=true;}});
-  ss('tt_tickets',tickets);
-  updateAdminBadge();
-  document.getElementById('admin-tickets').innerHTML=tickets.map(t=>`
-    <div class="ticket-card">
-      <div class="ticket-header">
-        <div class="ticket-from">📢 ${escH(t.uname)} — ${escH(t.subj)}</div>
-        <div class="ticket-time">${fmtDate(t.ts)}</div>
-      </div>
-      <div class="ticket-msg">${escH(t.body)}</div>
-    </div>`).join('')||'<p style="color:var(--text-s);font-size:13px;">ไม่มีรายงานปัญหา</p>';
-}
+
+
 function renderAdminTestTT(){
   if(!requireAdmin('test-tt'))return;
   document.getElementById('admin-tt-area').innerHTML='';
@@ -1792,31 +2015,8 @@ function renderAdminTestTT(){
       <span>${s.ico||'📚'}</span> <b>${escH(s.code)}</b> ${escH(s.name)}</div>`;
   }).join('')||'<p style="font-size:12px;color:var(--text-t);">ไม่มีวิชา</p>';
 }
-function openEditUserModal(uid){
-  if(!requireAdmin('editUser'))return;
-  const u=(ls('tt_users')||[]).find(x=>x.id===uid);if(!u)return;
-  document.getElementById('eu-id').value=uid;
-  document.getElementById('eu-name').value=u.name||'';
-  document.getElementById('eu-school').value=u.school||'';
-  document.getElementById('eu-grade').value=u.grade||'';
-  document.getElementById('eu-role').value=u.role||'user';
-  openModal('modal-edit-user');
-}
-function saveEditUser(){
-  if(!requireAdmin('saveEditUser'))return;
-  const uid=document.getElementById('eu-id').value;
-  const users=ls('tt_users')||[];const i=users.findIndex(u=>u.id===uid);if(i<0)return;
-  users[i].name=sanitize(document.getElementById('eu-name').value);
-  users[i].school=sanitize(document.getElementById('eu-school').value);
-  users[i].grade=sanitize(document.getElementById('eu-grade').value);
-  // Prevent demoting yourself from admin
-  const newRole=document.getElementById('eu-role').value;
-  if(uid===CU.id&&newRole!=='admin'){alert('ไม่สามารถเปลี่ยน role ของตัวเองได้');return;}
-  users[i].role=newRole==='admin'?'admin':'user'; // whitelist roles
-  ss('tt_users',users);
-  logActivity(`Admin แก้ไขข้อมูล user: ${users[i].username}`);
-  closeModal('modal-edit-user');renderAdminUsers();
-}
+
+
 function adminDelUser(uid){
   if(!requireAdmin('adminDelUser'))return;
   if(uid===CU.id){alert('ไม่สามารถลบบัญชีตัวเองได้');return;}
@@ -2239,6 +2439,518 @@ function applyAvatarToUI(dataUrl){
 function loadAvatarFromStorage(){
   const dataUrl = ls('tt_avatar_'+CU?.id);
   if(dataUrl) applyAvatarToUI(dataUrl);
+}
+
+// ===================================================
+// HOMEWORK TRACKER
+// ===================================================
+const HW_TYPES = {hw:'📖 การบ้าน',exam:'📋 ทดสอบ',project:'🎯 โปรเจกต์',other:'📌 อื่นๆ'};
+const HW_PRIORITY = {high:'🔴',normal:'🟡',low:'🟢'};
+let hwCurrentFilter = 'all';
+function getUserHW(){ return ls('tt_hw_'+CU.id)||[]; }
+function saveUserHW(h){ ss('tt_hw_'+CU.id,h); }
+function hwFilter(f){
+  hwCurrentFilter=f;
+  document.querySelectorAll('#hw-filter-bar .btn').forEach((b,i)=>{
+    b.className='btn btn-sm '+((['all','pending','done','exam'][i]===f)?'btn-accent':'btn-ghost');
+  });
+  renderHWList();
+}
+function renderHWList(){
+  let items=getUserHW();
+  if(hwCurrentFilter==='pending') items=items.filter(h=>!h.done);
+  else if(hwCurrentFilter==='done') items=items.filter(h=>h.done);
+  else if(hwCurrentFilter==='exam') items=items.filter(h=>h.type==='exam');
+  items.sort((a,b)=>(a.due||'9')>(b.due||'9')?1:-1);
+  const list=document.getElementById('hw-list');
+  if(!list)return;
+  if(!items.length){list.innerHTML='<div class="card" style="text-align:center;padding:24px;color:var(--text-t);">ไม่มีรายการ 🎉</div>';return;}
+  list.innerHTML=items.map(h=>{
+    const overdue=h.due&&!h.done&&h.due<new Date().toISOString().slice(0,10);
+    return`<div class="hw-item${h.done?' done':''}">
+      <div class="hw-check${h.done?' checked':''}" onclick="toggleHW('${h.id}')">${h.done?'✓':''}</div>
+      <div style="flex:1;">
+        <div class="hw-text">${HW_PRIORITY[h.priority]||'🟡'} ${escH(h.title)}
+          <span class="hw-badge" style="background:${h.type==='exam'?'#FFE5CC':h.type==='project'?'#E5F0FF':'#F0FFE5'};color:var(--text-s);">${HW_TYPES[h.type]||'📌'}</span>
+          ${overdue?'<span class="hw-badge" style="background:#FFE5E5;color:#C0392B;">⏰ เลยกำหนด</span>':''}
+        </div>
+        ${h.subj?`<div style="font-size:11px;color:var(--text-t);">📚 ${escH(h.subj)}</div>`:''}
+        ${h.detail?`<div style="font-size:11px;color:var(--text-s);margin-top:2px;">${escH(h.detail.slice(0,60))}${h.detail.length>60?'…':''}</div>`:''}
+      </div>
+      <div class="hw-meta">${h.due?formatCalDate(h.due):'-'}</div>
+      <div style="display:flex;gap:3px;">
+        <button class="btn btn-ghost btn-xs" onclick="openHWModal('${h.id}')">✏️</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteHW('${h.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function openHWModal(editId=null){
+  document.getElementById('hw-edit-id').value=editId||'';
+  document.getElementById('hw-modal-h').textContent=editId?'📝 แก้ไขรายการ':'📝 เพิ่มรายการ';
+  const h=editId?getUserHW().find(x=>x.id===editId):null;
+  document.getElementById('hw-title').value=h?.title||'';
+  document.getElementById('hw-type').value=h?.type||'hw';
+  document.getElementById('hw-due').value=h?.due||'';
+  document.getElementById('hw-priority').value=h?.priority||'normal';
+  document.getElementById('hw-detail').value=h?.detail||'';
+  document.getElementById('hw-msg').innerHTML='';
+  // Fill subject options from user subjects
+  const subjs=getUserSubjects();
+  const sel=document.getElementById('hw-subj');
+  sel.innerHTML='<option value="">-- เลือกวิชา --</option>'+subjs.map(s=>`<option value="${escH(s.name)}"${h?.subj===s.name?' selected':''}>${escH(s.name)}</option>`).join('');
+  openModal('modal-hw');
+}
+function saveHW(){
+  const title=sanitize(document.getElementById('hw-title').value);
+  if(!title){document.getElementById('hw-msg').innerHTML='<div class="msg msg-err">กรุณาใส่หัวข้อ</div>';return;}
+  const h=getUserHW();
+  const editId=document.getElementById('hw-edit-id').value;
+  const obj={
+    id:editId||'h'+Date.now(),
+    title,subj:sanitize(document.getElementById('hw-subj').value),
+    type:document.getElementById('hw-type').value,
+    due:document.getElementById('hw-due').value,
+    priority:document.getElementById('hw-priority').value,
+    detail:sanitize(document.getElementById('hw-detail').value).slice(0,300),
+    done:editId?(h.find(x=>x.id===editId)?.done||false):false,
+    createdAt:editId?(h.find(x=>x.id===editId)?.createdAt||Date.now()):Date.now()
+  };
+  if(editId){const i=h.findIndex(x=>x.id===editId);if(i>=0)h[i]=obj;}
+  else{if(h.length>=200){document.getElementById('hw-msg').innerHTML='<div class="msg msg-err">เต็มแล้ว (200 รายการ)</div>';return;}h.unshift(obj);}
+  saveUserHW(h);closeModal('modal-hw');renderHWList();
+}
+function toggleHW(id){const h=getUserHW();const i=h.findIndex(x=>x.id===id);if(i>=0){h[i].done=!h[i].done;saveUserHW(h);renderHWList();}}
+function deleteHW(id){if(!confirm('ลบรายการนี้?'))return;saveUserHW(getUserHW().filter(x=>x.id!==id));renderHWList();}
+
+// ===================================================
+// EXPORT IMAGE (PNG / Wallpaper)
+// ===================================================
+async function exportImage(mode){
+  const el=document.getElementById('tt-wrap');
+  if(!el||!el.querySelector('table')){alert('กรุณาเปิดหน้าตารางก่อน');return;}
+  const previewArea=document.getElementById('export-preview-area');
+  previewArea.innerHTML='<p style="font-size:13px;color:var(--text-s);">⏳ กำลังสร้างภาพ...</p>';
+  try{
+    const canvas=await html2canvas(el,{scale:3,useCORS:true,backgroundColor:'#ffffff'});
+    if(mode==='share'){
+      const url=window.location.href;
+      navigator.clipboard?.writeText(url).then(()=>alert('คัดลอก URL แล้ว! แชร์ให้เพื่อนได้เลย\n'+url)).catch(()=>prompt('คัดลอก URL นี้:',url));
+      previewArea.innerHTML='';return;
+    }
+    // Create final canvas with desired dimensions
+    const out=document.createElement('canvas');
+    const ctx=out.getContext('2d');
+    if(mode==='wallpaper-mobile'){out.width=1080;out.height=1920;}
+    else if(mode==='wallpaper-desktop'){out.width=1920;out.height=1080;}
+    else{out.width=canvas.width;out.height=canvas.height;}
+    ctx.fillStyle='#ffffff';ctx.fillRect(0,0,out.width,out.height);
+    // Scale and center
+    const scale=Math.min(out.width/canvas.width,out.height/canvas.height)*0.9;
+    const x=(out.width-canvas.width*scale)/2;
+    const y=(out.height-canvas.height*scale)/2;
+    ctx.drawImage(canvas,x,y,canvas.width*scale,canvas.height*scale);
+    const link=document.createElement('a');
+    link.download=`timetable-${mode}-${CU.username}.png`;
+    link.href=out.toDataURL('image/png');
+    link.click();
+    // Show preview
+    previewArea.innerHTML=`<img src="${out.toDataURL('image/png')}" class="export-preview" style="max-height:200px;object-fit:contain;">
+      <p style="font-size:11px;color:var(--text-s);margin-top:6px;text-align:center;">✅ ดาวน์โหลดสำเร็จ!</p>`;
+  }catch(e){previewArea.innerHTML=`<div class="msg msg-err">เกิดข้อผิดพลาด: ${e.message}</div>`;}
+}
+
+// ===================================================
+// CLASS REMINDERS (Push Notification)
+// ===================================================
+let reminderInterval=null;
+function getReminderSettings(){return ls('tt_reminder_'+CU?.id)||{enabled:false,minutes:10};}
+function saveReminderSettings(){
+  const s={enabled:document.getElementById('notif-enabled')?.checked||false,minutes:+(document.getElementById('notif-minutes')?.value||10)};
+  ss('tt_reminder_'+CU.id,s);
+  if(s.enabled)startReminderCheck();else stopReminderCheck();
+  renderReminderPreview();
+}
+async function requestNotifPermission(){
+  if(!('Notification' in window)){alert('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือน');return;}
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){
+    document.getElementById('notif-permission-card').style.display='none';
+    document.getElementById('notif-enabled').checked=true;
+    saveReminderSettings();
+    new Notification('🐱 ตารางคาบเรียน',{body:'เปิดการแจ้งเตือนสำเร็จ!',icon:''});
+    updateNotifStatus();
+  }else{alert('ไม่ได้รับอนุญาตการแจ้งเตือน กรุณาเปิดใน Settings ของเบราว์เซอร์');}
+}
+function updateNotifStatus(){
+  const perm=('Notification' in window)?Notification.permission:'unsupported';
+  const badge=document.getElementById('notif-status-badge');
+  if(!badge)return;
+  const map={granted:'<span class="badge badge-user">✅ ได้รับอนุญาต</span>',denied:'<span class="badge badge-banned">🚫 ถูกปฏิเสธ</span>',default:'<span class="badge badge-warn">⚠️ ยังไม่ได้อนุญาต</span>',unsupported:'<span class="badge" style="background:#EEE;color:#666;">ไม่รองรับ</span>'};
+  badge.innerHTML=map[perm]||'';
+  const card=document.getElementById('notif-permission-card');
+  if(card)card.style.display=perm==='granted'?'none':'';
+}
+function renderReminderPreview(){
+  const s=getReminderSettings();
+  const cfg=getUserSettings();
+  const preview=document.getElementById('reminder-preview');
+  if(!preview)return;
+  const notifEnabled=document.getElementById('notif-enabled');
+  if(notifEnabled)notifEnabled.checked=s.enabled;
+  const minSel=document.getElementById('notif-minutes');
+  if(minSel)minSel.value=s.minutes;
+  // Show upcoming classes today
+  const today=new Date().getDay(); // 0=sun,1=mon
+  const dayIdx=today-1; // 0=mon
+  if(dayIdx<0||dayIdx>=cfg.days.length){preview.innerHTML='<p style="font-size:12px;color:var(--text-t);">วันนี้ไม่มีคลาส</p>';return;}
+  const slots=ls('tt_slots_'+CU.id+'_'+activeTTId)||{};
+  const subjects=getUserSubjects();
+  const now=new Date();
+  let upcoming=[];
+  cfg.periods.filter(p=>!p.b).forEach(p=>{
+    const subj=slots[`${dayIdx}_${p.id}`];
+    if(!subj)return;
+    const [h,m]=p.s.split(':').map(Number);
+    const classTime=new Date();classTime.setHours(h,m,0,0);
+    const diff=(classTime-now)/60000;
+    if(diff>0&&diff<=120)upcoming.push({p,subj:subjects.find(x=>x.id===subj),diff:Math.round(diff)});
+  });
+  preview.innerHTML=upcoming.length?`<div style="font-size:12px;font-weight:700;color:var(--text-s);margin-bottom:6px;">📅 คาบที่กำลังจะมาถึงวันนี้:</div>`+upcoming.map(({p,subj,diff})=>`<div style="background:var(--accent-soft);border-radius:8px;padding:8px 10px;margin-bottom:4px;font-size:12px;"><b>${subj?.name||'?'}</b> — ${p.s} <span style="color:var(--accent);">(อีก ${diff} นาที)</span></div>`).join(''):'<p style="font-size:12px;color:var(--text-t);">ไม่มีคาบเรียนใน 2 ชั่วโมงข้างหน้า</p>';
+}
+function testReminder(){
+  if(Notification.permission!=='granted'){alert('กรุณาเปิดอนุญาตการแจ้งเตือนก่อน');return;}
+  new Notification('🐱 ทดสอบการแจ้งเตือน',{body:'แจ้งเตือนก่อนเรียน 10 นาที — คณิตศาสตร์ ห้อง 301',tag:'test-reminder'});
+}
+function startReminderCheck(){
+  stopReminderCheck();
+  reminderInterval=setInterval(checkReminders,30000);
+  checkReminders();
+}
+function stopReminderCheck(){if(reminderInterval){clearInterval(reminderInterval);reminderInterval=null;}}
+function checkReminders(){
+  const s=getReminderSettings();
+  if(!s.enabled||Notification.permission!=='granted')return;
+  if(!activeTTId)return;
+  const cfg=getUserSettings();
+  const slots=ls('tt_slots_'+CU.id+'_'+activeTTId)||{};
+  const subjects=getUserSubjects();
+  const now=new Date();
+  const dayIdx=now.getDay()-1;
+  if(dayIdx<0||dayIdx>=cfg.days.length)return;
+  cfg.periods.filter(p=>!p.b).forEach(p=>{
+    const subj=slots[`${dayIdx}_${p.id}`];if(!subj)return;
+    const [h,m]=p.s.split(':').map(Number);
+    const classTime=new Date();classTime.setHours(h,m,0,0);
+    const diff=(classTime-now)/60000;
+    if(diff>0&&diff<=s.minutes&&diff>s.minutes-1){
+      const subjData=subjects.find(x=>x.id===subj);
+      const key=`reminded_${p.id}_${now.toDateString()}`;
+      if(ls(key))return;
+      ss(key,true);
+      new Notification(`🔔 อีก ${s.minutes} นาที — ${subjData?.name||'คาบเรียน'}`,{
+        body:`📍 ห้อง ${subjData?.room||'?'}  👨‍🏫 ${subjData?.teacher||'?'}  ⏰ ${p.s}`,
+        tag:`class-${p.id}-${now.toDateString()}`
+      });
+    }
+  });
+}
+
+// ===================================================
+// ADMIN: ANNOUNCEMENT
+// ===================================================
+function sendAnnouncement(){
+  if(!requireAdmin('announce'))return;
+  const text=sanitize(document.getElementById('ann-title').value);
+  if(!text){document.getElementById('ann-msg').innerHTML='<div class="msg msg-err">กรุณาใส่ข้อความ</div>';return;}
+  const color=document.getElementById('ann-color').value;
+  const ann={id:'a'+Date.now(),text,color,ts:Date.now(),by:CU.username};
+  ss('tt_announcement',ann);
+  // Log history
+  const hist=ls('tt_ann_history')||[];hist.unshift(ann);ss('tt_ann_history',hist.slice(0,20));
+  document.getElementById('ann-msg').innerHTML='<div class="msg msg-ok">✅ ส่งประกาศแล้ว</div>';
+  document.getElementById('ann-title').value='';
+  loadAnnouncement();renderAnnHistory();
+  logActivity(`Admin ส่งประกาศ: ${text}`);
+}
+function clearAnnouncement(){
+  if(!requireAdmin('announce'))return;
+  localStorage.removeItem('tt_announcement');
+  document.getElementById('announce-bar').classList.remove('show');
+  document.getElementById('ann-msg').innerHTML='<div class="msg msg-ok">✅ ลบประกาศแล้ว</div>';
+}
+function loadAnnouncement(){
+  const ann=ls('tt_announcement');
+  const bar=document.getElementById('announce-bar');
+  if(!ann||!bar)return;
+  bar.classList.add('show');
+  document.getElementById('announce-text').textContent=ann.text;
+  if(ann.color&&ann.color!=='gradient')bar.style.background=ann.color;
+  else bar.style.background='';
+}
+function renderAnnHistory(){
+  if(!requireAdmin('annHistory'))return;
+  const hist=ls('tt_ann_history')||[];
+  const el=document.getElementById('ann-history');if(!el)return;
+  el.innerHTML=hist.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px;display:flex;justify-content:space-between;">
+    <span>${escH(a.text)}</span><span style="color:var(--text-t);">${fmtDate(a.ts)}</span></div>`).join('')||'<p style="font-size:12px;color:var(--text-t);">ยังไม่มีประกาศ</p>';
+}
+
+// ===================================================
+// ADMIN: ANALYTICS
+// ===================================================
+function renderAdminAnalytics(){
+  if(!requireAdmin('analytics'))return;
+  const users=ls('tt_users')||[];
+  const tts=users.reduce((n,u)=>n+(ls('tt_list_'+u.id)||[]).length,0);
+  const banned=users.filter(u=>u.status==='banned').length;
+  document.getElementById('analytics-stats').innerHTML=`
+    <div class="admin-stat"><div class="admin-stat-num">${users.length}</div><div class="admin-stat-label">👥 สมาชิกทั้งหมด</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${tts}</div><div class="admin-stat-label">📅 ตารางทั้งหมด</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${banned}</div><div class="admin-stat-label">🚫 บัญชีถูกแบน</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${(ls('tt_tickets')||[]).length}</div><div class="admin-stat-label">📢 รายงานปัญหา</div></div>`;
+  // Signup chart (7 days)
+  const days=[];const now=new Date();
+  for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);days.push(d.toDateString());}
+  const signups=days.map(d=>({label:d.slice(0,3),count:users.filter(u=>new Date(u.createdAt).toDateString()===d).length}));
+  const maxS=Math.max(...signups.map(s=>s.count),1);
+  document.getElementById('chart-signups').innerHTML=signups.map(s=>`
+    <div class="chart-bar-row">
+      <div class="chart-bar-label">${s.label}</div>
+      <div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${(s.count/maxS*100)}%"></div></div>
+      <div class="chart-bar-val">${s.count}</div>
+    </div>`).join('');
+  // TT usage
+  const ttData=users.map(u=>({name:u.name||u.username,count:(ls('tt_list_'+u.id)||[]).length})).filter(u=>u.count>0).sort((a,b)=>b.count-a.count).slice(0,8);
+  const maxT=Math.max(...ttData.map(t=>t.count),1);
+  document.getElementById('chart-tts').innerHTML=ttData.length?ttData.map(t=>`
+    <div class="chart-bar-row">
+      <div class="chart-bar-label" style="font-size:10px;">${escH(t.name.slice(0,8))}</div>
+      <div class="chart-bar-outer"><div class="chart-bar-inner" style="width:${(t.count/maxT*100)}%"></div></div>
+      <div class="chart-bar-val">${t.count}</div>
+    </div>`).join(''):'<p style="font-size:12px;color:var(--text-t);">ยังไม่มีข้อมูล</p>';
+}
+
+// ===================================================
+// ADMIN: TICKET FILTER
+// ===================================================
+let ticketFilter='all';
+function filterTickets(f){
+  ticketFilter=f;
+  renderAdminTickets();
+}
+function renderAdminTickets(){
+  if(!requireAdmin('tickets'))return;
+  let tickets=ls('tt_tickets')||[];
+  tickets.forEach((t,i)=>{if(!t.read){tickets[i].read=true;}});
+  ss('tt_tickets',tickets);updateAdminBadge();
+  if(ticketFilter==='open') tickets=tickets.filter(t=>!t.resolved);
+  else if(ticketFilter==='resolved') tickets=tickets.filter(t=>t.resolved);
+  document.getElementById('admin-tickets').innerHTML=tickets.length?tickets.map(t=>`
+    <div class="ticket-card-v2${!t.read?' unread':''}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;flex-wrap:wrap;gap:6px;">
+        <div>
+          <span style="font-size:13px;font-weight:700;color:var(--accent);">📢 ${escH(t.uname)}</span>
+          <span style="font-size:12px;color:var(--text-s);margin-left:6px;">— ${escH(t.subj)}</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <span class="ticket-status ${t.resolved?'ticket-resolved':'ticket-open'}">${t.resolved?'✅ แก้แล้ว':'🔴 รอดำเนินการ'}</span>
+          <span style="font-size:11px;color:var(--text-t);">${fmtDate(t.ts)}</span>
+        </div>
+      </div>
+      <div style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:8px;">${escH(t.body)}</div>
+      <button class="btn btn-ghost btn-xs" onclick="resolveTicket('${t.id}')">${t.resolved?'↩️ เปิดใหม่':'✅ ทำเครื่องหมายแก้แล้ว'}</button>
+    </div>`).join(''):'<p style="color:var(--text-s);font-size:13px;padding:12px;">ไม่มีรายงานปัญหา 🎉</p>';
+}
+function resolveTicket(id){
+  const tickets=ls('tt_tickets')||[];
+  const i=tickets.findIndex(t=>t.id===id);
+  if(i>=0){tickets[i].resolved=!tickets[i].resolved;ss('tt_tickets',tickets);}
+  renderAdminTickets();
+}
+
+// ===================================================
+// ADMIN: UPGRADED USER MANAGEMENT
+// ===================================================
+function switchEUTab(tab){
+  ['info','access','quota'].forEach(t=>{
+    document.getElementById('eu-tab-'+t).classList.toggle('hidden',t!==tab);
+    const btn=document.getElementById('eu-tab-'+t+'-btn');
+    if(btn)btn.className='btn btn-sm '+(t===tab?'btn-primary':'btn-ghost');
+    if(btn){btn.style.flex='1';btn.style.borderRadius='7px';}
+  });
+}
+function openEditUserModal(uid){
+  if(!requireAdmin('editUser'))return;
+  const u=(ls('tt_users')||[]).find(x=>x.id===uid);if(!u)return;
+  document.getElementById('eu-id').value=uid;
+  document.getElementById('eu-name').value=u.name||'';
+  document.getElementById('eu-school').value=u.school||'';
+  document.getElementById('eu-grade').value=u.grade||'';
+  document.getElementById('eu-role').value=u.role||'user';
+  document.getElementById('eu-status').value=u.status||'active';
+  document.getElementById('eu-ban-reason').value=u.banReason||'';
+  document.getElementById('eu-new-pw-admin').value='';
+  document.getElementById('eu-quota').value=u.quotaOverride||3;
+  document.getElementById('eu-msg').innerHTML='';
+  const ttCount=(ls('tt_list_'+uid)||[]).length;
+  document.getElementById('eu-quota-current').textContent=ttCount+' ตาราง';
+  switchEUTab('info');
+  openModal('modal-edit-user');
+}
+async function saveEditUser(){
+  if(!requireAdmin('saveEditUser'))return;
+  const uid=document.getElementById('eu-id').value;
+  const users=ls('tt_users')||[];const i=users.findIndex(u=>u.id===uid);if(i<0)return;
+  users[i].name=sanitize(document.getElementById('eu-name').value);
+  users[i].school=sanitize(document.getElementById('eu-school').value);
+  users[i].grade=sanitize(document.getElementById('eu-grade').value);
+  const newRole=document.getElementById('eu-role').value;
+  if(uid===CU.id&&newRole!=='admin'){document.getElementById('eu-msg').innerHTML='<div class="msg msg-err">ไม่สามารถเปลี่ยน role ตัวเองได้</div>';return;}
+  users[i].role=newRole==='admin'?'admin':'user';
+  users[i].status=document.getElementById('eu-status').value;
+  users[i].banReason=sanitize(document.getElementById('eu-ban-reason').value);
+  users[i].quotaOverride=+document.getElementById('eu-quota').value||3;
+  // Reset password
+  const newPwRaw=document.getElementById('eu-new-pw-admin').value;
+  if(newPwRaw){
+    if(newPwRaw.length<6){document.getElementById('eu-msg').innerHTML='<div class="msg msg-err">รหัสผ่านต้องมีอย่างน้อย 6 ตัว</div>';return;}
+    users[i].password=await hashPassword(newPwRaw);
+    users[i].forceChangePassword=true;
+  }
+  ss('tt_users',users);
+  logActivity(`Admin แก้ไข user: ${users[i].username}`);
+  closeModal('modal-edit-user');renderAdminUsers();
+}
+function renderAdminUsers(){
+  if(!requireAdmin('users'))return;
+  const searchEl=document.getElementById('user-search');
+  const q=(searchEl?.value||'').toLowerCase();
+  let users=ls('tt_users')||[];
+  if(q)users=users.filter(u=>(u.name||'').toLowerCase().includes(q)||(u.username||'').toLowerCase().includes(q)||(u.email||'').toLowerCase().includes(q));
+  document.getElementById('admin-user-table').innerHTML=`<thead><tr>
+    <th>ชื่อ</th><th>Username</th><th>โรงเรียน</th><th>ชั้น</th><th>สถานะ</th><th>Quota</th><th>สิทธิ์</th><th>จัดการ</th>
+  </tr></thead><tbody>${users.map(u=>{
+    const ttCount=(ls('tt_list_'+u.id)||[]).length;
+    const quota=u.quotaOverride||3;
+    const banned=u.status==='banned';
+    return`<tr>
+      <td><span class="status-dot ${banned?'status-banned':'status-active'}"></span>${escH(u.name||'-')}</td>
+      <td>${escH(u.username)}</td>
+      <td>${escH(u.school||'-')}</td>
+      <td>${escH(u.grade||'-')}</td>
+      <td><span class="badge ${banned?'badge-banned':'badge-user'}">${banned?'🚫 แบน':'✅ ปกติ'}</span></td>
+      <td><span class="quota-badge">${ttCount}/${quota}</span></td>
+      <td><span class="badge ${u.role==='admin'?'badge-admin':'badge-user'}">${u.role==='admin'?'👑':'👤'} ${u.role}</span></td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="btn btn-ghost btn-xs" onclick="openEditUserModal('${u.id}')">⚙️</button>
+        ${u.id!==CU.id?`<button class="btn btn-danger btn-xs" onclick="adminDelUser('${u.id}')">🗑️</button>`:''}
+      </td>
+    </tr>`;}).join('')||'<tr><td colspan="8" style="text-align:center;color:var(--text-s);">ไม่พบผู้ใช้</td></tr>'}</tbody>`;
+}
+
+// ===================================================
+// ADMIN TAB UPGRADE (add new tabs)
+// ===================================================
+function adminTab(t){
+  if(!requireAdmin('adminTab'))return;
+  const ALL_TABS=['overview','users','tickets','analytics','announce','test-tt'];
+  ALL_TABS.forEach(tab=>{
+    const el=document.getElementById('atab-'+tab);
+    if(el)el.classList.toggle('hidden',tab!==t);
+  });
+  document.querySelectorAll('#admin-tabs .btn').forEach((b,i)=>{
+    b.className='btn btn-sm '+(ALL_TABS[i]===t?'btn-accent':'btn-ghost');
+  });
+  if(t==='overview')renderAdminOverview();
+  if(t==='users')renderAdminUsers();
+  if(t==='tickets')renderAdminTickets();
+  if(t==='analytics')renderAdminAnalytics();
+  if(t==='announce'){renderAnnHistory();}
+  if(t==='test-tt')renderAdminTestTT();
+}
+
+// ===================================================
+// REGISTER: FIELD VALIDATION
+// ===================================================
+function validateField(inputId, check, errMsg){
+  const el=document.getElementById(inputId);
+  if(!el)return true;
+  const msgEl=el.parentElement?.querySelector('.field-error-msg');
+  const valid=check(el.value);
+  el.classList.toggle('field-error',!valid);
+  el.classList.toggle('field-ok',valid&&el.value.length>0);
+  if(msgEl){msgEl.textContent=errMsg;msgEl.classList.toggle('show',!valid&&el.value.length>0);}
+  return valid||el.value.length===0;
+}
+function attachRegisterValidation(){
+  const rules=[
+    ['r-user', v=>v.length>=3, 'ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร'],
+    ['r-email', v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'รูปแบบอีเมลไม่ถูกต้อง'],
+    ['r-pw', v=>/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(v), 'ต้องมีตัวอักษรและตัวเลข อย่างน้อย 8 ตัว'],
+    ['r-name', v=>v.trim().length>=2, 'กรุณากรอกชื่อ'],
+    ['r-school', v=>v.trim().length>=2, 'กรุณากรอกชื่อโรงเรียน'],
+    ['r-grade', v=>v.trim().length>=1, 'กรุณากรอกชั้นเรียน'],
+  ];
+  rules.forEach(([id,check,msg])=>{
+    const el=document.getElementById(id);
+    if(el){
+      el.addEventListener('blur',()=>validateField(id,check,msg));
+      el.addEventListener('input',()=>validateField(id,check,msg));
+    }
+  });
+  // Password strength meter
+  const pwEl=document.getElementById('r-pw');
+  if(pwEl){
+    pwEl.addEventListener('input',()=>{
+      const pw=pwEl.value;
+      const hint=document.getElementById('r-pw-strength');
+      if(!hint||!pw){if(hint)hint.innerHTML='';return;}
+      let score=0;
+      if(pw.length>=8)score++;
+      if(/[A-Z]/.test(pw))score++;
+      if(/[0-9]/.test(pw))score++;
+      if(/[^A-Za-z0-9]/.test(pw))score++;
+      if(/[a-z]/.test(pw))score++;
+      const levels=[
+        {label:'อ่อนมาก 😰',color:'#E74C3C'},
+        {label:'อ่อน 😟',color:'#E67E22'},
+        {label:'พอใช้ 😐',color:'#F1C40F'},
+        {label:'ดี 😊',color:'#2ECC71'},
+        {label:'แข็งแรงมาก 💪',color:'#27AE60'},
+      ];
+      const lv=levels[Math.min(score,4)];
+      const bar=Math.round((score/5)*100);
+      hint.innerHTML=`<div style="display:flex;align-items:center;gap:6px;">
+        <div style="flex:1;height:4px;background:#EEE;border-radius:4px;overflow:hidden;">
+          <div style="width:${bar}%;height:100%;background:${lv.color};transition:width .3s;border-radius:4px;"></div>
+        </div>
+        <span style="color:${lv.color};font-weight:700;font-size:11px;">${lv.label}</span>
+      </div>`;
+    });
+  }
+}
+function validateAllRegisterFields(){
+  const rules=[
+    ['r-user', v=>v.trim().length>=3, 'ชื่อผู้ใช้ต้องมีอย่างน้อย 3 ตัวอักษร'],
+    ['r-email', v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), 'รูปแบบอีเมลไม่ถูกต้อง'],
+    ['r-pw', v=>/^(?=.*[A-Za-z])(?=.*\d).{8,}$/.test(v), 'ต้องมีตัวอักษรและตัวเลข อย่างน้อย 8 ตัว'],
+    ['r-name', v=>v.trim().length>=2, 'กรุณากรอกชื่อ'],
+    ['r-school', v=>v.trim().length>=2, 'กรุณากรอกชื่อโรงเรียน'],
+    ['r-grade', v=>v.trim().length>=1, 'กรุณากรอกชั้นเรียน'],
+  ];
+  let ok=true;
+  rules.forEach(([id,check,msg])=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const valid=check(el.value);
+    el.classList.toggle('field-error',!valid);
+    el.classList.toggle('field-ok',valid);
+    const msgEl=el.parentElement?.querySelector('.field-error-msg');
+    if(msgEl){msgEl.textContent=msg;msgEl.classList.toggle('show',!valid);}
+    if(!valid)ok=false;
+  });
+  return ok;
 }
 
 // ===================================================
