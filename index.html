@@ -2,8 +2,21 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🐱 ตารางคาบเรียนออนไลน์</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>🐱 ClassMeow — ตารางเรียนออนไลน์</title>
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#A07CD0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="ClassMeow">
+<link rel="apple-touch-icon" href="icon-192.png">
+<!-- SEO -->
+<meta name="description" content="ClassMeow — แอปจัดการตารางเรียน การบ้าน และปฏิทิน สำหรับนักเรียนไทย">
+<meta name="keywords" content="ตารางเรียน, การบ้าน, ปฏิทิน, นักเรียน, ClassMeow">
+<meta property="og:title" content="🐱 ClassMeow">
+<meta property="og:description" content="แอปจัดการตารางเรียน การบ้าน และปฏิทิน สำหรับนักเรียนไทย">
+<meta property="og:type" content="website">
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -203,7 +216,59 @@ table.timetable th { background:linear-gradient(135deg,var(--p1),var(--p2)); col
 .ticket-time { font-size:11px; color:var(--text-t); }
 .ticket-msg { font-size:13px; color:var(--text); line-height:1.5; }
 
-/* ===== NEW FEATURES v8 ===== */
+/* ===== SETTINGS GAMIFIED ===== */
+.period-item {
+  background: var(--card); border: 2px solid var(--border); border-radius: 12px;
+  padding: 10px 12px; display: flex; align-items: center; gap: 10px;
+  cursor: grab; transition: all .2s; user-select: none;
+}
+.period-item:hover { border-color: var(--accent); box-shadow: 0 3px 12px var(--shadow); }
+.period-item.dragging-item { opacity: .4; cursor: grabbing; }
+.period-item.drag-target { border-color: var(--accent); border-style: dashed; background: var(--accent-soft); }
+.period-item.is-break { background: linear-gradient(135deg,#FFFDE7,#FFF9C4); border-color: #FFD700; }
+.period-drag-handle { font-size: 16px; color: var(--text-t); cursor: grab; padding: 2px 4px; }
+.period-num-badge { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+.period-num-badge.break-badge { background: #FFD700; color: #7A6000; }
+.period-inputs { display: flex; gap: 6px; flex: 1; }
+.period-inputs input { padding: 5px 8px; font-size: 12px; border-radius: 7px; }
+.period-inputs input.time-inp { width: 72px; }
+.period-inputs input.label-inp { flex: 1; }
+.period-del-btn { width: 26px; height: 26px; border-radius: 8px; border: none; background: #FFE5E5; color: #C0392B; font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: background .15s; }
+.period-del-btn:hover { background: #FFCCCC; }
+.day-item { background: var(--card); border: 2px solid var(--border); border-radius: 10px; padding: 8px 12px; display: flex; align-items: center; gap: 8px; cursor: grab; transition: all .2s; }
+.day-item:hover { border-color: var(--accent); }
+.day-item.dragging-item { opacity: .4; }
+.day-item.drag-target { border-color: var(--accent); border-style: dashed; background: var(--accent-soft); }
+.day-color-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+/* Settings preview mini-table */
+.preview-table { border-collapse: separate; border-spacing: 2px; width: 100%; font-size: 10px; }
+.preview-table th { background: var(--accent); color: #fff; padding: 4px 2px; border-radius: 4px; text-align: center; font-size: 9px; white-space: nowrap; }
+.preview-table td { height: 28px; border-radius: 4px; background: var(--card); border: 1px dashed var(--border); text-align: center; vertical-align: middle; }
+.preview-table td.break-td { background: #FFFDE7; border-color: #FFD700; font-size: 9px; }
+/* Inbox / Chat */
+.ticket-item { border-radius: 10px; padding: 10px 12px; cursor: pointer; border: 1.5px solid var(--border); margin-bottom: 7px; transition: all .18s; }
+.ticket-item:hover { border-color: var(--accent); background: var(--accent-soft); }
+.ticket-item.active-ticket { border-color: var(--accent); background: var(--accent-soft); }
+.ticket-item.unread-ticket { border-left: 4px solid var(--accent); }
+.ticket-item-title { font-size: 13px; font-weight: 700; color: var(--text); }
+.ticket-item-meta { font-size: 11px; color: var(--text-t); margin-top: 2px; }
+.ticket-item-preview { font-size: 11px; color: var(--text-s); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Chat bubbles */
+.chat-bubble-wrap { display: flex; flex-direction: column; gap: 2px; }
+.chat-bubble-wrap.from-me { align-items: flex-end; }
+.chat-bubble-wrap.from-other { align-items: flex-start; }
+.chat-bubble { max-width: 75%; padding: 10px 14px; border-radius: 16px; font-size: 13px; line-height: 1.5; word-break: break-word; }
+.from-me .chat-bubble { background: linear-gradient(135deg, var(--p1), var(--p2)); color: #fff; border-bottom-right-radius: 4px; }
+.from-other .chat-bubble { background: var(--card); border: 1.5px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
+.from-other.admin-bubble .chat-bubble { background: var(--accent-soft); border-color: var(--accent); }
+.chat-meta { font-size: 10px; color: var(--text-t); padding: 0 4px; }
+.chat-sender { font-size: 11px; font-weight: 700; color: var(--accent); padding: 0 4px 2px; }
+/* Status chip */
+.status-chip { display: inline-flex; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.chip-open { background: #FFE5E5; color: #C0392B; }
+.chip-resolved { background: #E5FFF0; color: #1E8449; }
+/* Responsive settings */
+@media(max-width:860px){ #settings-layout{grid-template-columns:1fr;} #inbox-layout{grid-template-columns:1fr;} }
 /* Announcement banner */
 .announce-bar { background:linear-gradient(135deg,var(--p1),var(--p2)); color:#fff; padding:10px 20px; font-size:13px; font-weight:600; display:none; align-items:center; gap:10px; position:sticky; top:56px; z-index:150; }
 .announce-bar.show { display:flex; }
@@ -308,7 +373,245 @@ input.field-ok { border-color:#2ECC71 !important; }
 hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
 .page-title { font-size:20px; font-weight:700; color:var(--text); margin-bottom:18px; }
 .scroll-x { overflow-x:auto; }
-</style>
+
+/* ============================================================
+   UX/UI v2 — Design System & Improvements
+   ============================================================ */
+
+/* ── Design Tokens ── */
+:root {
+  --font-xs:11px; --font-sm:12px; --font-body:14px; --font-md:15px;
+  --font-lg:18px; --font-xl:22px; --font-2xl:28px;
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
+  --space-5:20px; --space-6:24px;
+  --tap-min:44px;        /* WCAG minimum touch target */
+  --transition:0.18s cubic-bezier(0.4,0,0.2,1);
+  --transition-slow:0.3s cubic-bezier(0.4,0,0.2,1);
+  --radius-pill:999px;
+  /* Accessible contrast versions */
+  --text-on-pastel:#2A1040;
+  --border-focus:2px solid var(--accent);
+  /* Dark mode tokens (default = light) */
+  --dm-bg:#1A1225; --dm-card:#241830; --dm-border:#3D2A50;
+  --dm-text:#F0E8FF; --dm-text-s:#C0A0E0;
+}
+
+/* ── Dark Mode ── */
+body.dark-mode {
+  --bg:var(--dm-bg); --card:var(--dm-card); --border:var(--dm-border);
+  --text:var(--dm-text); --text-s:var(--dm-text-s); --text-t:#8060A8;
+  --shadow:rgba(0,0,0,0.4); --accent-soft:#3D2A50;
+}
+body.dark-mode input,
+body.dark-mode select,
+body.dark-mode textarea { background:#2E1E42; color:var(--dm-text); border-color:var(--dm-border); }
+body.dark-mode .card { background:var(--dm-card); }
+body.dark-mode .auth-card { background:#1E1230; }
+body.dark-mode .sidebar { background:var(--dm-card); border-color:var(--dm-border); }
+body.dark-mode .topbar { background:var(--dm-card); border-color:var(--dm-border); }
+.dark-toggle { cursor:pointer; font-size:18px; width:var(--tap-min); height:var(--tap-min); display:flex; align-items:center; justify-content:center; border-radius:10px; border:none; background:transparent; transition:background var(--transition); }
+.dark-toggle:hover { background:var(--accent-soft); }
+
+/* ── Toast Notification System ── */
+#toast-container {
+  position:fixed; bottom:24px; right:24px; z-index:9999;
+  display:flex; flex-direction:column; gap:8px; pointer-events:none;
+}
+.toast {
+  display:flex; align-items:center; gap:10px;
+  padding:12px 18px; border-radius:12px; max-width:340px;
+  font-size:var(--font-body); font-weight:600; color:#fff;
+  box-shadow:0 8px 24px rgba(0,0,0,0.2);
+  pointer-events:all; cursor:pointer;
+  animation:toast-in 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  transition:opacity 0.25s, transform 0.25s;
+}
+.toast.toast-hiding { animation:toast-out 0.25s ease forwards; }
+.toast-success { background:linear-gradient(135deg,#1E9E6B,#27AE60); }
+.toast-error   { background:linear-gradient(135deg,#C0392B,#E74C3C); }
+.toast-warn    { background:linear-gradient(135deg,#D68910,#F39C12); }
+.toast-info    { background:linear-gradient(135deg,var(--accent),var(--p1)); }
+.toast-icon    { font-size:18px; flex-shrink:0; }
+@keyframes toast-in  { from{opacity:0;transform:translateX(60px) scale(.9)} to{opacity:1;transform:translateX(0) scale(1)} }
+@keyframes toast-out { from{opacity:1;transform:translateY(0)} to{opacity:0;transform:translateY(12px)} }
+
+/* ── Loading Skeleton ── */
+.skeleton {
+  background:linear-gradient(90deg,var(--border) 25%,var(--accent-soft) 50%,var(--border) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:8px;
+}
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-line { height:14px; margin-bottom:8px; border-radius:6px; }
+.skeleton-line.short { width:40%; }
+.skeleton-line.medium { width:70%; }
+.skeleton-line.full { width:100%; }
+
+/* ── Global Loading Overlay ── */
+.page-loading {
+  position:absolute; inset:0; background:var(--bg);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:12px; z-index:10; border-radius:inherit;
+}
+.page-loading.hidden { display:none; }
+.spin { width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-dots { display:flex;gap:6px; }
+.loading-dots span { width:8px;height:8px;border-radius:50%;background:var(--accent);animation:dot-bounce 1.2s ease-in-out infinite; }
+.loading-dots span:nth-child(2){animation-delay:.2s}
+.loading-dots span:nth-child(3){animation-delay:.4s}
+@keyframes dot-bounce { 0%,80%,100%{transform:scale(0.6);opacity:.5} 40%{transform:scale(1);opacity:1} }
+
+/* ── Empty States ── */
+.empty-state {
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:48px 24px; text-align:center; gap:14px;
+}
+.empty-state-art { font-size:72px; line-height:1; filter:drop-shadow(0 4px 8px rgba(0,0,0,.08)); animation:float 3s ease-in-out infinite; }
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.empty-state-title { font-size:var(--font-lg); font-weight:700; color:var(--text); }
+.empty-state-body  { font-size:var(--font-body); color:var(--text-s); max-width:280px; line-height:1.6; }
+.empty-state-cta   { margin-top:4px; }
+
+/* ── Onboarding ── */
+#onboarding-overlay {
+  position:fixed; inset:0; background:rgba(20,5,40,0.75);
+  z-index:8888; display:flex; align-items:center; justify-content:center; padding:20px;
+  backdrop-filter:blur(4px);
+}
+#onboarding-overlay.hidden { display:none; }
+.onboard-card {
+  background:var(--card); border-radius:24px; padding:36px 32px;
+  max-width:480px; width:100%; text-align:center;
+  box-shadow:0 24px 64px rgba(80,20,120,.3);
+  animation:onboard-in 0.4s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes onboard-in { from{opacity:0;transform:scale(.85) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.onboard-step-art  { font-size:80px; margin-bottom:16px; }
+.onboard-step-num  { display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--text-s);margin-bottom:12px; }
+.onboard-dots      { display:flex;gap:6px;justify-content:center;margin:20px 0; }
+.onboard-dot       { width:8px;height:8px;border-radius:50%;background:var(--border);transition:all var(--transition); }
+.onboard-dot.active{ background:var(--accent);width:20px;border-radius:4px; }
+.onboard-actions   { display:flex;gap:10px;margin-top:4px; }
+.onboard-actions .btn { flex:1; min-height:var(--tap-min); }
+
+/* ── Improved Buttons (tap target, focus ring) ── */
+.btn { min-height:var(--tap-min); position:relative; overflow:hidden; }
+.btn::after {
+  content:''; position:absolute; inset:0; border-radius:inherit;
+  background:rgba(255,255,255,0); transition:background var(--transition);
+}
+.btn:hover::after   { background:rgba(255,255,255,0.08); }
+.btn:active::after  { background:rgba(0,0,0,0.08); }
+.btn:focus-visible  { outline:var(--border-focus); outline-offset:2px; }
+.btn-sm { min-height:36px; }
+.btn-xs { min-height:30px; }
+/* Save button success state */
+.btn-saving { pointer-events:none; }
+.btn-saved  { background:linear-gradient(135deg,#1E9E6B,#27AE60)!important; color:#fff!important; }
+
+/* ── Form improvements ── */
+input:focus, select:focus, textarea:focus {
+  border-color:var(--accent); background:#fff;
+  box-shadow:0 0 0 3px rgba(160,124,208,0.15);
+}
+.field-error-msg { font-size:var(--font-xs); color:var(--danger); margin-top:3px; display:none; }
+.field-error-msg.show { display:block; }
+input.field-error { border-color:var(--danger)!important; box-shadow:0 0 0 3px rgba(231,76,60,0.15)!important; }
+input.field-ok    { border-color:#2ECC71!important; }
+label { font-size:var(--font-sm); font-weight:600; color:var(--text-s); margin-bottom:5px; cursor:pointer; }
+
+/* ── Timetable Cell improvements ── */
+table.timetable th   { font-size:var(--font-sm); padding:9px 6px; }
+table.timetable .cell-name  { font-size:var(--font-sm)!important; font-weight:700; }
+table.timetable .cell-code  { font-size:var(--font-xs)!important; }
+table.timetable .cell-room-info { font-size:var(--font-xs)!important; }
+.tt-cell { min-height:68px!important; height:68px!important; }
+
+/* ── Sidebar nav tap target ── */
+.nav-item { min-height:var(--tap-min); font-size:var(--font-body); }
+
+/* ── Contrast fix: readable text on pastel ── */
+.cell-content    { color:var(--text-on-pastel)!important; }
+.cell-code       { color:var(--text-on-pastel)!important; opacity:.75!important; }
+.cell-room-info  { color:var(--text-on-pastel)!important; opacity:.8!important; }
+.subj-card       { color:var(--text-on-pastel)!important; }
+.subj-card-name  { color:var(--text-on-pastel)!important; }
+.sticky-note     { color:var(--text-on-pastel)!important; }
+
+/* ── Micro-animations ── */
+.card  { transition:box-shadow var(--transition), transform var(--transition); }
+.nav-item       { transition:background var(--transition), color var(--transition), transform 0.1s; }
+.nav-item:active{ transform:scale(0.97); }
+.qa-btn         { transition:all var(--transition); }
+.qa-btn:active  { transform:scale(0.95); }
+.tt-list-card   { transition:all var(--transition); }
+.subj-card      { transition:all var(--transition); }
+/* Drag ghost styling */
+[draggable]:active { cursor:grabbing; }
+
+/* ── Page transition ── */
+.page { animation:page-in 0.2s ease; }
+@keyframes page-in { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Mobile improvements ── */
+@media(max-width:700px){
+  :root { --font-body:13px; }
+  .content-pad { padding:12px; }
+  .topbar { padding:0 12px; height:52px; }
+  .quick-actions { grid-template-columns:repeat(4,1fr); gap:8px; }
+  .qa-btn { padding:10px 6px; }
+  .qa-icon { font-size:20px; }
+  .qa-label { font-size:10px; }
+  .stat-grid { grid-template-columns:1fr 1fr; }
+  /* timetable horizontal scroll hint */
+  .timetable-wrap::after {
+    content:'← เลื่อนดูตาราง →';
+    display:block; text-align:center; font-size:11px;
+    color:var(--text-t); padding:6px 0; font-style:italic;
+  }
+  /* Bigger touch targets in calendar */
+  .cal-cell { min-height:52px!important; }
+  .cal-add-btn { opacity:1!important; width:22px!important; height:22px!important; }
+  /* Inbox layout stack */
+  #inbox-layout { grid-template-columns:1fr!important; }
+  /* Settings stack */
+  #settings-layout { grid-template-columns:1fr!important; }
+  /* Toast position */
+  #toast-container { bottom:12px; right:12px; left:12px; }
+  .toast { max-width:100%; }
+  /* Onboarding */
+  .onboard-card { padding:28px 20px; }
+  .onboard-step-art { font-size:60px; }
+}
+@media(max-width:400px){
+  .quick-actions { grid-template-columns:repeat(3,1fr); }
+}
+
+/* ── Breadcrumb ── */
+.breadcrumb { display:flex; align-items:center; gap:6px; font-size:var(--font-sm); color:var(--text-s); margin-bottom:12px; }
+.breadcrumb-sep { opacity:.4; }
+.breadcrumb-cur { color:var(--accent); font-weight:700; }
+
+/* ── Progress bar (for onboarding / loading) ── */
+.progress-bar { height:4px; border-radius:2px; background:var(--border); overflow:hidden; }
+.progress-fill { height:100%; border-radius:2px; background:linear-gradient(90deg,var(--accent),var(--p2)); transition:width 0.4s ease; }
+
+/* ── Tooltip ── */
+[data-tip] { position:relative; }
+[data-tip]:hover::before {
+  content:attr(data-tip);
+  position:absolute; bottom:calc(100% + 6px); left:50%; transform:translateX(-50%);
+  background:rgba(30,10,50,0.9); color:#fff; border-radius:8px;
+  padding:5px 10px; font-size:11px; font-weight:600; white-space:nowrap;
+  pointer-events:none; z-index:999;
+}
+[data-tip]:hover::after {
+  content:''; position:absolute; bottom:calc(100% + 2px); left:50%; transform:translateX(-50%);
+  border:4px solid transparent; border-top-color:rgba(30,10,50,0.9);
+  pointer-events:none; z-index:999;
+}
 </head>
 <body class="theme-cat-purple">
 
@@ -325,8 +628,8 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
   <div style="width:100%;max-width:460px;">
     <div style="text-align:center;margin-bottom:24px;">
       <div style="font-size:60px;" id="auth-emoji">🐈</div>
-      <h1 style="color:var(--accent);margin-top:8px;">ตารางคาบเรียนออนไลน์</h1>
-      <p style="color:var(--text-s);font-size:14px;margin-top:4px;">ระบบจัดการตารางเรียนสำหรับนักเรียน</p>
+      <h1 style="color:var(--accent);margin-top:8px;">ClassMeow</h1>
+      <p style="color:var(--text-s);font-size:14px;margin-top:4px;">ตารางเรียน · การบ้าน · ปฏิทิน สำหรับนักเรียนไทย</p>
     </div>
     <div class="card">
       <div style="display:flex;gap:4px;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:20px;">
@@ -340,7 +643,18 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         <div class="form-group"><label>อีเมล หรือ ชื่อผู้ใช้</label><input type="text" id="l-id" placeholder="email หรือ username"></div>
         <div class="form-group"><label>รหัสผ่าน</label><input type="password" id="l-pw" placeholder="รหัสผ่าน" onkeydown="if(event.key==='Enter')doLogin()"></div>
         <button class="btn btn-primary btn-full mt-8" onclick="doLogin()">🔑 เข้าสู่ระบบ</button>
-
+        <!-- Divider -->
+        <div style="display:flex;align-items:center;gap:10px;margin:14px 0;">
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+          <span style="font-size:12px;color:var(--text-t);">หรือ</span>
+          <div style="flex:1;height:1px;background:var(--border);"></div>
+        </div>
+        <!-- Google OAuth -->
+        <button onclick="signInWithGoogle()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:10px;padding:11px 16px;border:1.5px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;font-family:Sarabun,sans-serif;font-size:14px;font-weight:600;color:#3D2250;transition:all .2s;min-height:44px;" onmouseover="this.style.borderColor='#4285F4';this.style.background='#F8F9FF'" onmouseout="this.style.borderColor='var(--border)';this.style.background='#fff'">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+          เข้าสู่ระบบด้วย Google
+        </button>
+        <p style="text-align:center;font-size:11px;color:var(--text-t);margin-top:12px;">ยังไม่มีบัญชี? <a href="#" onclick="switchAuthTab('register')" style="color:var(--accent);font-weight:700;">สมัครสมาชิกฟรี</a></p>
       </div>
 
       <!-- Register -->
@@ -405,15 +719,33 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
 <!-- ===== MAIN SCREEN ===== -->
 <div id="main-screen">
   <div class="topbar">
-    <button class="btn btn-ghost btn-icon" id="sidebar-toggle" onclick="toggleSidebar()" style="display:none;">☰</button>
-    <div class="topbar-logo">
-      <span class="theme-indicator" id="top-emoji">🐈</span> ตารางคาบเรียน
+    <button class="btn btn-ghost btn-icon" id="sidebar-toggle" onclick="toggleSidebar()" style="display:none;" data-tip="เมนู">☰</button>
+    <div class="topbar-logo"><span class="theme-indicator" id="top-emoji">🐈</span> ClassMeow</div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <button class="dark-toggle" onclick="toggleDarkMode()" id="dark-btn" data-tip="โหมดมืด/สว่าง" title="โหมดมืด/สว่าง">🌙</button>
+      <button class="btn btn-ghost btn-sm" onclick="openModal('modal-theme')" data-tip="เปลี่ยนธีม">🎨</button>
+      <div class="avatar" id="top-avatar" style="cursor:pointer;" onclick="goPage('profile')" data-tip="โปรไฟล์">-</div>
+      <span style="font-size:13px;color:var(--text-s);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" id="top-uname"></span>
+      <button class="btn btn-ghost btn-sm" onclick="doLogout()" data-tip="ออกจากระบบ">ออก</button>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;">
-      <button class="btn btn-ghost btn-sm" onclick="openModal('modal-theme')" title="เปลี่ยนธีม">🎨</button>
-      <div class="avatar" id="top-avatar">-</div>
-      <span style="font-size:13px;color:var(--text-s);" id="top-uname"></span>
-      <button class="btn btn-ghost btn-sm" onclick="doLogout()">ออก</button>
+  </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container"></div>
+
+  <!-- Onboarding Overlay -->
+  <div id="onboarding-overlay" class="hidden">
+    <div class="onboard-card">
+      <div class="onboard-step-art" id="ob-art">🐱</div>
+      <div class="onboard-step-num"><span id="ob-num">ขั้นที่ 1/4</span></div>
+      <h2 style="font-size:22px;font-weight:700;color:var(--accent);margin-bottom:8px;" id="ob-title">ยินดีต้อนรับสู่ ClassMeow!</h2>
+      <p style="font-size:14px;color:var(--text-s);line-height:1.7;" id="ob-body">แอปจัดการตารางเรียน การบ้าน และปฏิทิน สำหรับนักเรียนไทย 🎒</p>
+      <div class="onboard-dots" id="ob-dots"></div>
+      <div class="progress-bar" style="margin-bottom:20px;"><div class="progress-fill" id="ob-progress" style="width:25%;"></div></div>
+      <div class="onboard-actions">
+        <button class="btn btn-ghost" id="ob-skip" onclick="finishOnboarding()">ข้ามทั้งหมด</button>
+        <button class="btn btn-primary" id="ob-next" onclick="nextOnboardStep()">ถัดไป →</button>
+      </div>
     </div>
   </div>
 
@@ -429,14 +761,15 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <div class="nav-section">
         <div class="nav-section-title">เมนูหลัก</div>
         <div class="nav-item active" data-p="dashboard" onclick="goPage('dashboard')"><span class="nav-icon">🏠</span> แดชบอร์ด</div>
-        <div class="nav-item" data-p="timetable" onclick="goPage('timetable')"><span class="nav-icon">📅</span> ตารางเรียน</div>
+        <div class="nav-item" data-p="timetable" onclick="goPage('timetable')"><span class="nav-icon">📅</span> ตาราง</div>
         <div class="nav-item" data-p="calendar" onclick="goPage('calendar')"><span class="nav-icon">🗓️</span> ปฏิทิน & โน๊ต</div>
         <div class="nav-item" data-p="homework" onclick="goPage('homework')"><span class="nav-icon">📝</span> การบ้าน & ทดสอบ</div>
         <div class="nav-item" data-p="reminders" onclick="goPage('reminders')"><span class="nav-icon">🔔</span> แจ้งเตือนคาบเรียน</div>
+        <div class="nav-item" data-p="inbox" onclick="goPage('inbox')"><span class="nav-icon">💬</span> กล่องข้อความ <span class="nav-badge" id="inbox-badge" style="display:none">!</span></div>
         <div class="nav-item" data-p="profile" onclick="goPage('profile')"><span class="nav-icon">👤</span> ข้อมูลส่วนตัว</div>
-        <div class="nav-item" data-p="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span> ตั้งค่าตาราง</div>
-        <div class="nav-item" data-p="report" onclick="goPage('report')"><span class="nav-icon">📢</span> แจ้งปัญหา</div>
-        <div class="nav-item" data-p="admin" id="nav-admin" onclick="goPage('admin')" style="display:none"><span class="nav-icon">👑</span> Admin Panel <span class="nav-badge" id="admin-badge" style="display:none">!</span></div>
+        <div class="nav-item" data-p="settings" onclick="goPage('settings')"><span class="nav-icon">⚙️</span> ตั้งค่า</div>
+        <div class="nav-item" id="nav-admin-tt" data-p="admin-tt" onclick="goPage('admin-tt')" style="display:none"><span class="nav-icon">🧪</span> Test Mode</div>
+        <div class="nav-item" id="nav-admin" data-p="admin" onclick="goPage('admin')" style="display:none"><span class="nav-icon">👑</span> Admin Panel <span class="nav-badge" id="admin-badge" style="display:none">!</span></div>
       </div>
     </div>
 
@@ -447,7 +780,7 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
       <div id="page-dashboard" class="content-pad" style="display:block">
         <div class="dash-hero">
           <h2 id="hero-greeting">สวัสดี! 👋</h2>
-          <p id="hero-sub">ยินดีต้อนรับสู่ระบบตารางคาบเรียน</p>
+          <p id="hero-sub">ยินดีต้อนรับสู่ ClassMeow 🐱</p>
           <div class="dash-hero-emoji" id="hero-emoji">🐈</div>
         </div>
         <div class="stat-grid" id="dash-stats"></div>
@@ -469,9 +802,10 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         <div class="tt-page-header">
           <h2 id="tt-page-title">📅 ตารางเรียน</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-ghost btn-sm" onclick="openModal('modal-export')">📸 Export รูป</button>
-            <button class="btn btn-ghost btn-sm" onclick="exportPDF('A4',this)">📄 A4</button>
-            <button class="btn btn-ghost btn-sm" onclick="exportPDF('A5',this)">📄 A5</button>
+            <button class="btn btn-ghost btn-sm" onclick="openModal('modal-export')" data-tip="Export รูปภาพ">📸 Export รูป</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportPDF('A4',this)" data-tip="PDF A4">📄 A4</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportPDF('A5',this)" data-tip="PDF A5">📄 A5</button>
+            <button class="btn btn-ghost btn-sm" onclick="exportToCalendar()" data-tip="เพิ่มเข้า Google/Apple Calendar">📅 .ics</button>
             <button class="btn btn-ghost btn-sm" onclick="window.print()">🖨️</button>
           </div>
         </div>
@@ -557,41 +891,103 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
       </div>
 
       <!-- SETTINGS PAGE -->
+      <!-- SETTINGS PAGE — gamified redesign with live preview -->
       <div id="page-settings" class="content-pad hidden">
-        <div class="page-title">⚙️ ตั้งค่าตาราง</div>
-        <div style="max-width:700px;display:grid;gap:16px;">
-          <div class="card">
-            <div class="settings-section">
-              <h3>⏰ คาบเรียน</h3>
-              <div id="period-list"></div>
-              <div style="display:flex;gap:8px;margin-top:8px;">
-                <button class="btn btn-ghost btn-sm" onclick="addPeriod()">+ เพิ่มคาบ</button>
-                <button class="btn btn-ghost btn-sm" onclick="addBreak()">🍱 เพิ่มพัก</button>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+          <h2 style="flex:1;">⚙️ ตั้งค่า ClassMeow</h2>
+          <button class="btn btn-primary btn-sm" onclick="saveSettings()">💾 บันทึก</button>
+          <button class="btn btn-ghost btn-sm" onclick="resetSettings()">↺ รีเซ็ต</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;" id="settings-layout">
+          <!-- Left: editor -->
+          <div style="display:flex;flex-direction:column;gap:14px;">
+            <!-- Periods card -->
+            <div class="card" style="border:2px solid var(--accent-soft);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                <span style="font-size:20px;">⏰</span>
+                <div style="flex:1;">
+                  <div style="font-weight:700;color:var(--accent);">คาบเรียน</div>
+                  <div style="font-size:11px;color:var(--text-t);">ลากเพื่อจัดลำดับ • คลิกเพื่อแก้ไข</div>
+                </div>
+                <div style="display:flex;gap:6px;">
+                  <button class="btn btn-ghost btn-xs" onclick="addPeriod()">➕ คาบ</button>
+                  <button class="btn btn-ghost btn-xs" onclick="addBreak()">🍱 พัก</button>
+                </div>
               </div>
+              <div id="period-list" style="display:flex;flex-direction:column;gap:6px;"></div>
             </div>
-            <div class="settings-section">
-              <h3>📆 วันเรียน</h3>
-              <div id="day-list"></div>
-              <button class="btn btn-ghost btn-sm mt-8" onclick="addDay()">+ เพิ่มวัน</button>
+            <!-- Days card -->
+            <div class="card" style="border:2px solid var(--accent-soft);">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
+                <span style="font-size:20px;">📆</span>
+                <div style="flex:1;">
+                  <div style="font-weight:700;color:var(--accent);">วันเรียน</div>
+                  <div style="font-size:11px;color:var(--text-t);">ลากเพื่อจัดลำดับ</div>
+                </div>
+                <button class="btn btn-ghost btn-xs" onclick="addDay()">➕ วัน</button>
+              </div>
+              <div id="day-list" style="display:flex;flex-direction:column;gap:6px;"></div>
             </div>
-            <div style="display:flex;gap:8px;">
-              <button class="btn btn-primary" onclick="saveSettings()" style="flex:1;">💾 บันทึกการตั้งค่า</button>
-              <button class="btn btn-ghost" onclick="resetSettings()">↺ รีเซ็ต</button>
+          </div>
+          <!-- Right: live preview -->
+          <div>
+            <div class="card" style="border:2px solid var(--border);position:sticky;top:76px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+                <span style="font-size:18px;">👁️</span>
+                <div style="font-weight:700;color:var(--accent);">👁️ ตัวอย่าง Real-time</div>
+              </div>
+              <div style="overflow-x:auto;" id="settings-preview"></div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- REPORT PAGE -->
-      <div id="page-report" class="content-pad hidden">
-        <div class="page-title">📢 แจ้งปัญหา</div>
-        <div class="card" style="max-width:520px;">
-          <p style="font-size:13px;color:var(--text-s);margin-bottom:16px;">หากพบปัญหาในการใช้งาน สามารถแจ้งให้ admin ทราบได้ที่นี่</p>
-          <div class="form-group"><label>หัวข้อปัญหา</label><input type="text" id="rep-subject" placeholder="เช่น ตารางเรียนไม่บันทึก"></div>
-          <div class="form-group"><label>รายละเอียด</label><textarea id="rep-body" placeholder="อธิบายปัญหาที่พบ..."></textarea></div>
-          <div id="rep-msg"></div>
-          <button class="btn btn-primary btn-full" onclick="sendReport()">📨 ส่งรายงาน</button>
+      <!-- INBOX PAGE — user & admin messaging -->
+      <div id="page-inbox" class="content-pad hidden">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+          <h2 style="flex:1;">💬 กล่องข้อความ</h2>
+          <button class="btn btn-primary btn-sm" onclick="openNewTicketModal()">✏️ แจ้งปัญหาใหม่</button>
         </div>
+        <div style="display:grid;grid-template-columns:280px 1fr;gap:16px;min-height:500px;" id="inbox-layout">
+          <!-- Ticket list -->
+          <div class="card" style="padding:12px;overflow-y:auto;max-height:680px;">
+            <div style="font-size:12px;font-weight:700;color:var(--text-s);text-transform:uppercase;letter-spacing:.7px;margin-bottom:10px;">รายการ</div>
+            <div id="ticket-list-panel"></div>
+          </div>
+          <!-- Chat area -->
+          <div class="card" style="padding:0;display:flex;flex-direction:column;min-height:500px;" id="chat-panel">
+            <div style="padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;" id="chat-header">
+              <span style="font-size:24px;">💬</span>
+              <div>
+                <div style="font-weight:700;color:var(--text);" id="chat-title">เลือกข้อความ</div>
+                <div style="font-size:12px;color:var(--text-s);" id="chat-status">เลือกรายการจากด้านซ้าย</div>
+              </div>
+            </div>
+            <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;" id="chat-messages">
+              <div style="text-align:center;margin-top:60px;">
+                <div style="font-size:48px;">💌</div>
+                <div style="font-size:14px;color:var(--text-t);margin-top:8px;">เลือกข้อความจากด้านซ้าย<br>หรือแจ้งปัญหาใหม่</div>
+              </div>
+            </div>
+            <div style="padding:12px;border-top:1px solid var(--border);display:none;" id="chat-input-area">
+              <div style="display:flex;gap:8px;">
+                <input type="text" id="chat-reply-input" placeholder="พิมพ์ข้อความ..." style="flex:1;" onkeydown="if(event.key==='Enter')sendReply()">
+                <button class="btn btn-primary btn-sm" onclick="sendReply()">ส่ง 📨</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ADMIN TEST TT PAGE -->
+      <div id="page-admin-tt" class="content-pad hidden">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">
+          <h2 style="flex:1;">🧪 Test Mode (Admin)</h2>
+        </div>
+        <div class="card mb-12" style="background:var(--accent-soft);border:1.5px solid var(--accent);">
+          <p style="font-size:13px;color:var(--accent);">🛠️ ทดลองสร้างตารางเหมือน User ทั่วไป เพื่อ debug ปัญหา ทั่วไป เพื่อช่วย debug ปัญหาที่ User รายงาน</p>
+        </div>
+        <div id="admin-tt-standalone"></div>
       </div>
 
       <!-- HOMEWORK TRACKER PAGE -->
@@ -675,7 +1071,7 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
         <div id="atab-analytics" class="hidden">
           <div class="admin-stat-grid" id="analytics-stats"></div>
           <div class="card mt-16"><div class="card-header"><div class="card-title">👥 สมาชิกใหม่ 7 วันล่าสุด</div></div><div class="chart-bar-wrap mt-8" id="chart-signups"></div></div>
-          <div class="card mt-16"><div class="card-header"><div class="card-title">📅 ตารางที่สร้างต่อ User</div></div><div id="chart-tts" class="mt-8"></div></div>
+          <div class="card mt-16"><div class="card-header"><div class="card-title">📅 ตารางต่อ User</div></div><div id="chart-tts" class="mt-8"></div></div>
         </div>
         <div id="atab-announce" class="hidden">
           <div class="card">
@@ -864,7 +1260,7 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
 <!-- Export Image Modal -->
 <div class="modal-bg" id="modal-export">
   <div class="modal" style="max-width:420px;">
-    <h3>📸 Export ตาราง</h3>
+    <h3>📸 Export & Share</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
       <button class="btn btn-primary" onclick="exportImage('wallpaper-mobile')">📱 วอลเปเปอร์มือถือ<br><span style="font-size:10px;font-weight:400;">(1080×1920)</span></button>
       <button class="btn btn-primary" onclick="exportImage('wallpaper-desktop')">🖥️ วอลเปเปอร์เดสก์ท็อป<br><span style="font-size:10px;font-weight:400;">(1920×1080)</span></button>
@@ -954,7 +1350,34 @@ hr.soft { border:none; border-top:1px solid var(--border); margin:14px 0; }
   </div>
 </div>
 
-<!-- Note Create/Edit Modal -->
+<!-- New Ticket Modal -->
+<div class="modal-bg" id="modal-new-ticket">
+  <div class="modal" style="max-width:420px;">
+    <h3>✏️ แจ้งปัญหาใหม่</h3>
+    <div class="form-group">
+      <label>หัวข้อปัญหา *</label>
+      <input type="text" id="ticket-subject-inp" placeholder="เช่น ตารางเรียนไม่บันทึก" maxlength="80">
+    </div>
+    <div class="form-group">
+      <label>ประเภทปัญหา</label>
+      <select id="ticket-category">
+        <option value="bug">🐛 Bug / ข้อผิดพลาด</option>
+        <option value="feature">💡 ขอฟีเจอร์ใหม่</option>
+        <option value="question">❓ คำถาม</option>
+        <option value="other">📌 อื่นๆ</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>รายละเอียด *</label>
+      <textarea id="ticket-body-inp" placeholder="อธิบายปัญหาที่พบให้ละเอียด..." maxlength="600" style="min-height:100px;"></textarea>
+    </div>
+    <div id="new-ticket-msg"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modal-new-ticket')">ยกเลิก</button>
+      <button class="btn btn-primary" onclick="submitNewTicket()">📨 ส่งข้อความ</button>
+    </div>
+  </div>
+</div>
 <div class="modal-bg" id="modal-note">
   <div class="modal" style="max-width:400px;">
     <h3 id="note-modal-h">✏️ สร้างโน๊ต</h3>
@@ -1109,13 +1532,13 @@ function validateSession(sess){
   if(!sess||!sess._token||!sess.id)return false;
   const storedToken=ls('tt_token');
   if(sess._token!==storedToken)return false;
-  // Session expires after 7 days
   if(Date.now()-sess._issuedAt>7*24*60*60*1000)return false;
-  // Verify user still exists in users list and role matches (prevents privilege escalation)
   const users=ls('tt_users')||[];
   const realUser=users.find(u=>u.id===sess.id);
   if(!realUser)return false;
-  if(realUser.role!==sess.role)return false; // role was changed by admin
+  if(realUser.role!==sess.role)return false;
+  // SEC: also reject if user is banned
+  if(realUser.status==='banned')return false;
   return true;
 }
 
@@ -1286,72 +1709,13 @@ function startSessionCheck(){
     }
   },60000); // check every 60s
 }
-function initApp(){
-  if(!CU)return;
-  const users=ls('tt_users')||[];
-  const realUser=users.find(u=>u.id===CU.id);
-  if(!realUser){doLogout();return;}
-  // SEC: check if banned
-  if(realUser.status==='banned'){
-    localStorage.removeItem('tt_session');
-    localStorage.removeItem('tt_token');
-    CU=null;
-    document.getElementById('auth-screen').style.display='flex';
-    authMsg(`🚫 บัญชีนี้ถูกระงับการใช้งาน${realUser.banReason?' เหตุผล: '+realUser.banReason:''}`);
-    return;
-  }
-  if(realUser.role!==CU.role){const newSess=createSession(realUser);CU=newSess;}
-  document.getElementById('auth-screen').style.display='none';
-  document.getElementById('main-screen').style.display='flex';
-  const n=CU.name||CU.username;
-  document.getElementById('top-avatar').textContent=n.charAt(0).toUpperCase();
-  document.getElementById('top-uname').textContent=n;
-  document.getElementById('sb-avatar').textContent=n.charAt(0).toUpperCase();
-  document.getElementById('sb-name').textContent=n;
-  document.getElementById('sb-role').textContent=CU.role==='admin'?'👑 ผู้ดูแลระบบ':'👤 นักเรียน';
-  document.getElementById('nav-admin').style.display=CU.role==='admin'?'flex':'none';
-  const savedTheme=ls('tt_theme_'+CU.id)||'cat-purple';
-  applyTheme(savedTheme,false);
-  if(!ls('tt_list_'+CU.id)) ss('tt_list_'+CU.id,[]);
-  if(!ls('tt_active_'+CU.id)) ss('tt_active_'+CU.id,null);
-  if(window.innerWidth<=700) document.getElementById('sidebar-toggle').style.display='flex';
-  renderDashboard();
-  updateAdminBadge();
-  startSessionCheck();
-  loadAvatarFromStorage();
-  loadAnnouncement();
-  // Start reminders if enabled
-  const rSett=getReminderSettings();
-  if(rSett.enabled)startReminderCheck();
-  // Attach register form validation
-  attachRegisterValidation();
-}
+/* old initApp replaced by UX v2 version */
 
 // ===================================================
 // NAVIGATION
 // ===================================================
 let currentPage='dashboard';
-function goPage(p){
-  // SEC: guard admin page
-  if(p==='admin'&&(!CU||CU.role!=='admin')){
-    console.warn('SEC: unauthorized admin page access attempt');
-    return;
-  }
-  document.querySelectorAll('[id^="page-"]').forEach(el=>el.classList.add('hidden'));
-  document.getElementById('page-'+p).classList.remove('hidden');
-  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  document.querySelector(`[data-p="${p}"]`)?.classList.add('active');
-  currentPage=p;
-  if(p==='dashboard')renderDashboard();
-  if(p==='timetable'){renderTTPage();}
-  if(p==='profile')renderProfile();
-  if(p==='settings')renderSettings();
-  if(p==='admin'&&CU.role==='admin'){renderAdmin();adminTab('overview');}
-  if(p==='calendar'){renderCalendar();}
-  if(p==='homework'){renderHWList();}
-  if(p==='reminders'){updateNotifStatus();renderReminderPreview();}
-  closeSidebar();
-}
+/* old goPage replaced by UX v2 version */
 function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');}
 function closeSidebar(){if(window.innerWidth<=700)document.getElementById('sidebar').classList.remove('open');}
 
@@ -1364,12 +1728,12 @@ function renderDashboard(){
   const tts=ls('tt_list_'+CU.id)||[];
   const n=CU.name||CU.username;
   document.getElementById('hero-greeting').textContent=`สวัสดี, ${n}! ${theme.emoji}`;
-  document.getElementById('hero-sub').textContent=`คุณมีตาราง ${tts.length} ตาราง · เหลือที่ว่าง ${3-tts.length} ตาราง`;
+  document.getElementById('hero-sub').textContent=`📅 ${tts.length} ตาราง  ·  📝 ${subjects.length} วิชา  ·  🎉 Powered by ClassMeow`;
   document.getElementById('hero-emoji').textContent=theme.emoji;
   // Stats
   const subjects=getUserSubjects();
   document.getElementById('dash-stats').innerHTML=`
-    <div class="stat-card"><div class="stat-num">${tts.length}/3</div><div class="stat-label">📅 ตารางของฉัน</div></div>
+    <div class="stat-card"><div class="stat-num">${tts.length}/3</div><div class="stat-label">📅 My Tables</div></div>
     <div class="stat-card"><div class="stat-num">${subjects.length}</div><div class="stat-label">📚 วิชาที่สร้าง</div></div>
     <div class="stat-card"><div class="stat-num">${getFilledCount()}</div><div class="stat-label">✅ คาบที่กรอกแล้ว</div></div>
     ${CU.role==='admin'?`<div class="stat-card"><div class="stat-num">${(ls('tt_users')||[]).length}/50</div><div class="stat-label">👥 สมาชิก</div></div>`:''}`;
@@ -1380,10 +1744,11 @@ function renderDashboard(){
     <div class="qa-btn" onclick="goPage('settings')"><div class="qa-icon">⚙️</div><div class="qa-label">ตั้งค่า</div></div>
     <div class="qa-btn" onclick="goPage('calendar')"><div class="qa-icon">🗓️</div><div class="qa-label">ปฏิทิน</div></div>
     <div class="qa-btn" onclick="goPage('homework')"><div class="qa-icon">📝</div><div class="qa-label">การบ้าน</div></div>
+    <div class="qa-btn" onclick="goPage('inbox')"><div class="qa-icon">💬</div><div class="qa-label">ข้อความ</div></div>
     <div class="qa-btn" onclick="goPage('reminders')"><div class="qa-icon">🔔</div><div class="qa-label">แจ้งเตือน</div></div>
     <div class="qa-btn" onclick="openModal('modal-theme')"><div class="qa-icon">🎨</div><div class="qa-label">เปลี่ยนธีม</div></div>
-    ${CU.role==='admin'?`<div class="qa-btn" onclick="goPage('admin')"><div class="qa-icon">👑</div><div class="qa-label">Admin</div></div>`:''}`;
-  // TT list
+    ${CU.role==='admin'?`<div class="qa-btn" onclick="goPage('admin')"><div class="qa-icon">👑</div><div class="qa-label">Admin</div></div>`:''}
+    ${CU.role==='admin'?`<div class="qa-btn" onclick="goPage('admin-tt')"><div class="qa-icon">🧪</div><div class="qa-label">ทดสอบ</div></div>`:''}`;  // TT list
   const activeId=ls('tt_active_'+CU.id);
   let ttHtml=tts.map(tt=>`
     <div class="tt-list-card${tt.id===activeId?' active-card':''}" onclick="selectTT('${tt.id}');goPage('timetable')">
@@ -1442,7 +1807,7 @@ function renderTTPage(){
   document.getElementById('tt-advisor').value=meta.advisor||'';
   document.getElementById('tt-phone').value=meta.phone||'';
   const tt=tts.find(t=>t.id===activeTTId);
-  document.getElementById('tt-page-title').textContent=`📅 ${tt?.name||'ตารางเรียน'}`;
+  document.getElementById('tt-page-title').textContent=`📅 ${tt?.name||'ClassMeow'}`;
   renderTTTable('tt-wrap',activeTTId,CU.id,false);
   renderSubjPanel();
 }
@@ -1683,7 +2048,7 @@ function saveSubject(){
   if(activeTTId)renderTTTable('tt-wrap',activeTTId,CU.id);
 }
 function deleteSubject(id){
-  if(!confirm('ลบวิชานี้? วิชาจะหายออกจากช่องตารางทั้งหมดด้วย'))return;
+  if(!confirm('ลบวิชานี้? วิชาจะหายออกจากช่องตารางทั้งระบบด้วย'))return;
   let subjects=getUserSubjects().filter(x=>x.id!==id);
   saveUserSubjects(subjects);
   // Clear from all timetable slots for this user
@@ -1701,31 +2066,14 @@ function deleteSubject(id){
 // ===================================================
 // SETTINGS
 // ===================================================
-function renderSettings(){
-  const cfg=getUserSettings();
-  const pl=document.getElementById('period-list');
-  pl.innerHTML=cfg.periods.map((p,i)=>`<div class="period-row">
-    <div class="period-num">${p.b?'🍱':i+1}</div>
-    <input type="text" value="${escH(p.label)}" onchange="upPeriod(${i},'label',this.value)">
-    <input type="text" value="${p.s}" onchange="upPeriod(${i},'s',this.value)" placeholder="08:00">
-    <input type="text" value="${p.e}" onchange="upPeriod(${i},'e',this.value)" placeholder="09:00">
-    <button class="btn btn-danger btn-xs" onclick="delPeriod(${i})">✕</button>
-  </div>`).join('');
-  const dl=document.getElementById('day-list');
-  dl.innerHTML=cfg.days.map((d,i)=>`<div class="day-edit-row">
-    <input type="text" value="${escH(d)}" onchange="upDay(${i},this.value)" style="flex:1;">
-    <button class="btn btn-danger btn-xs" onclick="delDay(${i})">✕</button>
-  </div>`).join('');
-}
-function upPeriod(i,f,v){const c=getUserSettings();c.periods[i][f]=v;saveUserSettings(c);}
-function upDay(i,v){const c=getUserSettings();c.days[i]=v;saveUserSettings(c);}
-function delPeriod(i){const c=getUserSettings();c.periods.splice(i,1);saveUserSettings(c);renderSettings();}
-function delDay(i){const c=getUserSettings();c.days.splice(i,1);saveUserSettings(c);renderSettings();}
-function addPeriod(){const c=getUserSettings();const n=c.periods.filter(p=>!p.b).length+1;c.periods.push({id:'p'+Date.now(),label:`คาบที่ ${n}`,s:'17:00',e:'18:00',b:false});saveUserSettings(c);renderSettings();}
-function addBreak(){const c=getUserSettings();c.periods.push({id:'br'+Date.now(),label:'พัก',s:'12:00',e:'13:00',b:true});saveUserSettings(c);renderSettings();}
-function addDay(){const c=getUserSettings();c.days.push('วันใหม่');saveUserSettings(c);renderSettings();}
-function saveSettings(){renderTTPage();const b=document.querySelector('#page-settings .btn-primary');b.textContent='✅ บันทึกแล้ว!';setTimeout(()=>b.textContent='💾 บันทึกการตั้งค่า',1500);}
-function resetSettings(){if(!confirm('รีเซ็ตการตั้งค่า?'))return;saveUserSettings({periods:DEF_PERIODS.map(p=>({...p})),days:[...DEF_DAYS]});renderSettings();renderTTPage();}
+/* removed old renderSettings */
+/* removed old delPeriod */
+/* removed old delDay */
+/* removed old addPeriod */
+/* removed old addBreak */
+/* removed old addDay */
+/* removed old saveSettings */
+/* removed old resetSettings */
 
 function editDayLabel(idx){document.getElementById('day-idx').value=idx;document.getElementById('day-name-inp').value=getUserSettings().days[idx];openModal('modal-day');}
 function saveDayLabel(){const idx=+document.getElementById('day-idx').value;const v=document.getElementById('day-name-inp').value.trim();if(!v)return;const c=getUserSettings();c.days[idx]=v;saveUserSettings(c);closeModal('modal-day');renderTTPage();renderSettings();}
@@ -1806,7 +2154,7 @@ function checkPwStrength(){
   hint.innerHTML=`<span style="color:${lv.color};font-weight:700;">● ${lv.label}</span>${tips.length?' — ควรเพิ่ม: '+tips.join(', '):''}`;
 }
 
-function saveProfile(){
+function _origSaveProfile_real(){
   const users=ls('tt_users')||[];
   const i=users.findIndex(u=>u.id===CU.id);if(i<0)return;
   ['name','school','grade','addr','sub','dist','prov'].forEach(f=>{
@@ -1975,7 +2323,7 @@ function renderAdminOverview(){
   document.getElementById('admin-stats').innerHTML=`
     <div class="admin-stat"><div class="admin-stat-num">${users.length}/50</div><div class="admin-stat-label">👥 สมาชิก</div></div>
     <div class="admin-stat"><div class="admin-stat-num">${50-users.length}</div><div class="admin-stat-label">🪑 ที่ว่าง</div></div>
-    <div class="admin-stat"><div class="admin-stat-num">${tts}</div><div class="admin-stat-label">📅 ตารางทั้งหมด</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${tts}</div><div class="admin-stat-label">📅 ตารางทั้งระบบ</div></div>
     <div class="admin-stat"><div class="admin-stat-num">${tickets.filter(t=>!t.read).length}</div><div class="admin-stat-label">📢 แจ้งปัญหาใหม่</div></div>`;
   const activity=ls('tt_activity')||[];
   document.getElementById('admin-activity').innerHTML=activity.slice(0,15).map(a=>`
@@ -1985,36 +2333,7 @@ function renderAdminOverview(){
 }
 
 
-function renderAdminTestTT(){
-  if(!requireAdmin('test-tt'))return;
-  document.getElementById('admin-tt-area').innerHTML='';
-  const tts=ls('tt_list_'+CU.id)||[];
-  if(!tts.length){
-    document.getElementById('admin-tt-area').innerHTML=`<div class="card"><p style="color:var(--text-s);font-size:13px;">กด "+ สร้างตาราง" ที่หน้าตารางก่อนเพื่อทดสอบ</p><button class="btn btn-primary btn-sm mt-8" onclick="goPage('timetable')">ไปหน้าตาราง</button></div>`;
-    return;
-  }
-  const ttId=ls('tt_active_'+CU.id)||tts[0]?.id;
-  if(!ttId)return;
-  activeTTId=ttId;
-  // Table wrapper
-  const tableWrap=document.createElement('div');tableWrap.style.overflowX='auto';tableWrap.id='admin-tt-table';
-  document.getElementById('admin-tt-area').appendChild(tableWrap);
-  renderTTTable('admin-tt-table',ttId,CU.id,false);
-  // Subject panel
-  const sp=document.createElement('div');sp.style.marginTop='14px';
-  sp.innerHTML=`<div class="subj-panel-title">📚 วิชาเรียน (Admin Test)</div>
-    <button class="btn btn-ghost btn-sm mb-8" onclick="openSubjModal()">+ สร้างวิชา</button>
-    <div id="admin-subj-panel"></div>`;
-  document.getElementById('admin-tt-area').appendChild(sp);
-  const subjects=getUserSubjects();
-  document.getElementById('admin-subj-panel').innerHTML=subjects.map(s=>{
-    const col=SUBJ_COLORS.find(c=>c.k===s.ck)||SUBJ_COLORS[0];
-    return`<div class="subj-card" draggable="true" style="background:${col.bg};color:${col.tx};border-color:${col.bd};"
-      ondragstart="event.dataTransfer.setData('subjId','${s.id}');this.classList.add('dragging')"
-      ondragend="this.classList.remove('dragging')">
-      <span>${s.ico||'📚'}</span> <b>${escH(s.code)}</b> ${escH(s.name)}</div>`;
-  }).join('')||'<p style="font-size:12px;color:var(--text-t);">ไม่มีวิชา</p>';
-}
+/* renderAdminTestTT moved to renderAdminTTStandalone */
 
 
 function adminDelUser(uid){
@@ -2268,26 +2587,7 @@ function renderCalendar(){
   renderNotePanel();
 }
 
-function renderNotePanel(){
-  const notes = getUserNotes().slice().sort((a,b)=>b.createdAt-a.createdAt);
-  const list = document.getElementById('note-card-list');
-  if(!list) return;
-  list.innerHTML = notes.map(n=>{
-    const col = NOTE_COLORS.find(c=>c.k===n.colorKey)||NOTE_COLORS[0];
-    return `<div class="note-card" style="background:${col.bg};color:${col.tx};border-color:${col.bd};"
-      draggable="true"
-      ondragstart="calNoteDragStart(event,'${n.id}')"
-      ondragend="this.classList.remove('dragging')">
-      <div class="note-card-title">${escH(n.title)}</div>
-      ${n.body?`<div class="note-card-body">${escH(n.body.slice(0,80))}${n.body.length>80?'…':''}</div>`:''}
-      ${n.date?`<div style="font-size:10px;margin-top:4px;opacity:.6;">📅 ${formatCalDate(n.date)}</div>`:''}
-      <div class="note-card-actions">
-        <button class="subj-card-btn" onclick="openNoteModal('${n.id}')" style="color:${col.tx};">✏️ แก้ไข</button>
-        <button class="subj-card-btn" onclick="deleteNote('${n.id}')" style="color:#C0392B;">🗑️ ลบ</button>
-      </div>
-    </div>`;
-  }).join('')||`<p style="font-size:12px;color:var(--text-t);text-align:center;padding:12px;">ยังไม่มีโน๊ต<br>กด + เพื่อสร้าง</p>`;
-}
+/* old renderNotePanel replaced by UX v2 version */
 
 function formatCalDate(dateStr){
   if(!dateStr) return '';
@@ -2442,7 +2742,279 @@ function loadAvatarFromStorage(){
 }
 
 // ===================================================
-// HOMEWORK TRACKER
+// SETTINGS — GAMIFIED + DRAG SORT + LIVE PREVIEW
+// ===================================================
+let dragSrcPeriod=null, dragSrcDay2=null;
+const DAY_COLORS=['#FFD6E0','#E8D5F5','#C8F0E0','#FFE5CC','#CCE8FF','#FFF3C0','#FFE0EC','#D8EED8'];
+
+function renderSettings(){
+  const cfg=getUserSettings();
+  renderPeriodList(cfg);
+  renderDayList(cfg);
+  renderSettingsPreview(cfg);
+}
+
+function renderPeriodList(cfg){
+  cfg=cfg||getUserSettings();
+  const pl=document.getElementById('period-list');
+  if(!pl)return;
+  pl.innerHTML=cfg.periods.map((p,i)=>{
+    const isBreak=p.b;
+    const num=isBreak?'🍱':(cfg.periods.slice(0,i).filter(x=>!x.b).length+1);
+    return`<div class="period-item${isBreak?' is-break':''}" draggable="true" data-idx="${i}"
+      ondragstart="onPeriodDragStart(event,${i})" ondragover="onPeriodDragOver(event,${i})" ondragleave="this.classList.remove('drag-target')" ondrop="onPeriodDrop(event,${i})" ondragend="document.querySelectorAll('.period-item').forEach(x=>x.classList.remove('dragging-item','drag-target'))">
+      <span class="period-drag-handle" title="ลากเพื่อจัดลำดับ">⠿</span>
+      <span class="period-num-badge${isBreak?' break-badge':''}">${num}</span>
+      <div class="period-inputs">
+        <input class="label-inp" type="text" value="${escH(p.label)}" onchange="upPeriodLive(${i},'label',this.value)" placeholder="ชื่อคาบ">
+        <input class="time-inp" type="text" value="${p.s}" onchange="upPeriodLive(${i},'s',this.value)" placeholder="08:00">
+        <input class="time-inp" type="text" value="${p.e}" onchange="upPeriodLive(${i},'e',this.value)" placeholder="09:00">
+      </div>
+      <button class="period-del-btn" onclick="delPeriod(${i})" title="ลบ">✕</button>
+    </div>`;
+  }).join('');
+}
+
+function renderDayList(cfg){
+  cfg=cfg||getUserSettings();
+  const dl=document.getElementById('day-list');
+  if(!dl)return;
+  dl.innerHTML=cfg.days.map((d,i)=>`
+    <div class="day-item" draggable="true" data-idx="${i}"
+      ondragstart="onDayDragStart2(event,${i})" ondragover="onDayDragOver2(event,${i})" ondragleave="this.classList.remove('drag-target')" ondrop="onDayDrop2(event,${i})" ondragend="document.querySelectorAll('.day-item').forEach(x=>x.classList.remove('dragging-item','drag-target'))">
+      <span class="period-drag-handle">⠿</span>
+      <div class="day-color-dot" style="background:${DAY_COLORS[i%DAY_COLORS.length]};"></div>
+      <input type="text" value="${escH(d)}" style="flex:1;padding:5px 8px;font-size:13px;border-radius:7px;" onchange="upDayLive(${i},this.value)" placeholder="ชื่อวัน">
+      <button class="period-del-btn" onclick="delDay(${i})">✕</button>
+    </div>`).join('');
+}
+
+function renderSettingsPreview(cfg){
+  cfg=cfg||getUserSettings();
+  const pr=document.getElementById('settings-preview');
+  if(!pr)return;
+  const nonBreak=cfg.periods.filter(p=>!p.b);
+  let html=`<table class="preview-table"><thead><tr><th style="min-width:50px;">วัน</th>`;
+  cfg.periods.forEach(p=>{
+    if(p.b)html+=`<th style="background:#FFD700;color:#7A6000;">${escH(p.label.slice(0,4))}</th>`;
+    else html+=`<th>${escH(p.label.replace('คาบที่',''))}<br><span style="opacity:.7;">${p.s}</span></th>`;
+  });
+  html+=`</tr></thead><tbody>`;
+  cfg.days.forEach((d,di)=>{
+    html+=`<tr><td style="background:var(--accent);color:#fff;border-radius:4px;font-weight:700;padding:2px 4px;">${escH(d.slice(0,4))}</td>`;
+    cfg.periods.forEach(p=>{
+      if(p.b)html+=`<td class="break-td">🍱</td>`;
+      else html+=`<td></td>`;
+    });
+    html+=`</tr>`;
+  });
+  html+=`</tbody></table>`;
+  pr.innerHTML=html;
+}
+
+// Period drag-sort
+function onPeriodDragStart(e,i){dragSrcPeriod=i;setTimeout(()=>document.querySelectorAll('.period-item')[i]?.classList.add('dragging-item'),0);}
+function onPeriodDragOver(e,i){e.preventDefault();if(i===dragSrcPeriod)return;document.querySelectorAll('.period-item').forEach(x=>x.classList.remove('drag-target'));document.querySelectorAll('.period-item')[i]?.classList.add('drag-target');}
+function onPeriodDrop(e,i){
+  e.preventDefault();
+  if(dragSrcPeriod===null||dragSrcPeriod===i)return;
+  const cfg=getUserSettings();
+  const moved=cfg.periods.splice(dragSrcPeriod,1)[0];
+  cfg.periods.splice(i,0,moved);
+  saveUserSettings(cfg);dragSrcPeriod=null;
+  renderSettings();
+}
+// Day drag-sort
+function onDayDragStart2(e,i){dragSrcDay2=i;setTimeout(()=>document.querySelectorAll('.day-item')[i]?.classList.add('dragging-item'),0);}
+function onDayDragOver2(e,i){e.preventDefault();if(i===dragSrcDay2)return;document.querySelectorAll('.day-item').forEach(x=>x.classList.remove('drag-target'));document.querySelectorAll('.day-item')[i]?.classList.add('drag-target');}
+function onDayDrop2(e,i){
+  e.preventDefault();
+  if(dragSrcDay2===null||dragSrcDay2===i)return;
+  const cfg=getUserSettings();
+  const moved=cfg.days.splice(dragSrcDay2,1)[0];
+  cfg.days.splice(i,0,moved);
+  saveUserSettings(cfg);dragSrcDay2=null;
+  renderSettings();
+}
+// Live update helpers
+function upPeriodLive(i,f,v){const c=getUserSettings();c.periods[i][f]=v;saveUserSettings(c);renderSettingsPreview(c);}
+function upDayLive(i,v){const c=getUserSettings();c.days[i]=v;saveUserSettings(c);renderSettingsPreview(c);}
+function delPeriod(i){const c=getUserSettings();c.periods.splice(i,1);saveUserSettings(c);renderSettings();}
+function delDay(i){const c=getUserSettings();c.days.splice(i,1);saveUserSettings(c);renderSettings();}
+function addPeriod(){
+  const c=getUserSettings();
+  const n=c.periods.filter(p=>!p.b).length+1;
+  c.periods.push({id:'p'+Date.now(),label:`คาบที่ ${n}`,s:'17:00',e:'18:00',b:false});
+  saveUserSettings(c);renderSettings();
+}
+function addBreak(){const c=getUserSettings();c.periods.push({id:'br'+Date.now(),label:'พัก',s:'12:00',e:'13:00',b:true});saveUserSettings(c);renderSettings();}
+function addDay(){const c=getUserSettings();c.days.push('วันใหม่');saveUserSettings(c);renderSettings();}
+/* old saveSettings replaced by UX v2 version */
+function resetSettings(){
+  if(!confirm('รีเซ็ตการตั้งค่า?'))return;
+  saveUserSettings({periods:DEF_PERIODS.map(p=>({...p})),days:[...DEF_DAYS]});
+  renderSettings();renderTTPage();
+}
+
+// ===================================================
+// INBOX / CHAT SYSTEM
+// ===================================================
+let activeTicketId=null;
+
+function getTickets(){return ls('tt_tickets')||[];}
+function saveTickets(t){ss('tt_tickets',t);}
+
+function openNewTicketModal(){
+  document.getElementById('ticket-subject-inp').value='';
+  document.getElementById('ticket-body-inp').value='';
+  document.getElementById('ticket-category').value='bug';
+  document.getElementById('new-ticket-msg').innerHTML='';
+  openModal('modal-new-ticket');
+}
+function submitNewTicket(){
+  const subj=sanitize(document.getElementById('ticket-subject-inp').value);
+  const body=sanitize(document.getElementById('ticket-body-inp').value).slice(0,600);
+  const cat=document.getElementById('ticket-category').value;
+  if(!subj||!body){document.getElementById('new-ticket-msg').innerHTML='<div class="msg msg-err">กรุณากรอกข้อมูลให้ครบ</div>';return;}
+  const tickets=getTickets();
+  // Rate limit: 5 per hour
+  const recent=tickets.filter(t=>t.uid===CU.id&&Date.now()-t.ts<3600000);
+  if(recent.length>=5){document.getElementById('new-ticket-msg').innerHTML='<div class="msg msg-warn">ส่งได้สูงสุด 5 ครั้ง/ชั่วโมง</div>';return;}
+  const ticket={
+    id:'tk'+Date.now(), uid:CU.id, uname:escH(CU.name||CU.username),
+    subj, cat, ts:Date.now(), resolved:false, read:false,
+    messages:[{id:'m'+Date.now(),from:CU.id,fromName:CU.name||CU.username,role:CU.role,text:body,ts:Date.now()}]
+  };
+  tickets.unshift(ticket);
+  saveTickets(tickets);
+  logActivity(`${CU.name||CU.username} แจ้งปัญหา: ${subj}`);
+  updateAdminBadge();
+  closeModal('modal-new-ticket');
+  renderInbox();
+  openTicket(ticket.id);
+}
+
+/* old renderInbox replaced by UX v2 version */
+
+function openTicket(id){
+  if(!CU)return;
+  const tickets=getTickets();
+  const t=tickets.find(x=>x.id===id);
+  if(!t)return;
+  // SEC: ownership check — user can only view their own tickets
+  if(CU.role!=='admin' && t.uid!==CU.id){
+    console.warn('SEC: unauthorized ticket access attempt', id);
+    return;
+  }
+  activeTicketId=id;
+  // Mark as read
+  const ti=tickets.findIndex(x=>x.id===id);
+  if(CU.role==='admin'&&!tickets[ti].read){tickets[ti].read=true;saveTickets(tickets);updateAdminBadge();}
+  if(CU.role!=='admin'){
+    // mark admin messages as readByUser
+    let changed=false;
+    (tickets[ti].messages||[]).forEach(m=>{if(m.role==='admin'&&!m.readByUser){m.readByUser=true;changed=true;}});
+    if(changed)saveTickets(tickets);
+    renderInbox(); // update badge
+  }
+  // Update chat header
+  const CAT_MAP={bug:'🐛 Bug',feature:'💡 ฟีเจอร์',question:'❓ คำถาม',other:'📌 อื่นๆ'};
+  document.getElementById('chat-title').textContent=t.subj;
+  document.getElementById('chat-status').innerHTML=`
+    <span>${CAT_MAP[t.cat]||'📌'}</span> ·
+    <span class="status-chip ${t.resolved?'chip-resolved':'chip-open'}" style="font-size:10px;">${t.resolved?'✅ แก้แล้ว':'🔴 รอดำเนินการ'}</span>
+    ${CU.role==='admin'?`<button class="btn btn-ghost btn-xs" style="margin-left:6px;" onclick="resolveTicket('${id}')">${t.resolved?'↩️ เปิดใหม่':'✅ ปิด ticket'}</button>`:''}`;
+  // Render messages
+  const msgs=t.messages||[];
+  const msgArea=document.getElementById('chat-messages');
+  msgArea.innerHTML=msgs.map(m=>{
+    const isMe=m.from===CU.id;
+    const isAdmin=m.role==='admin';
+    return`<div class="chat-bubble-wrap ${isMe?'from-me':`from-other${isAdmin?' admin-bubble':''}`}">
+      ${!isMe?`<div class="chat-sender">${isAdmin?'👑 ':''} ${escH(m.fromName)}</div>`:''}
+      <div class="chat-bubble">${escH(m.text)}</div>
+      <div class="chat-meta">${fmtDateTime(m.ts)}</div>
+    </div>`;
+  }).join('');
+  msgArea.scrollTop=msgArea.scrollHeight;
+  // Show input
+  document.getElementById('chat-input-area').style.display='';
+  document.getElementById('chat-reply-input').focus();
+  // Re-render list to show active
+  renderInbox();
+}
+
+function sendReply(){
+  if(!CU){return;}
+  const inp=document.getElementById('chat-reply-input');
+  const text=sanitize(inp.value.trim()).slice(0,600);
+  if(!text||!activeTicketId)return;
+  const tickets=getTickets();
+  const i=tickets.findIndex(t=>t.id===activeTicketId);
+  if(i<0)return;
+  // SEC: ownership — user can only reply to their own tickets; admin can reply to any
+  if(CU.role!=='admin' && tickets[i].uid!==CU.id){
+    console.warn('SEC: unauthorized reply attempt');
+    return;
+  }
+  // SEC: prevent reply spam — max 30 messages per ticket
+  if((tickets[i].messages||[]).length>=30){
+    alert('จำนวนข้อความในกระทู้นี้เต็มแล้ว (สูงสุด 30 ข้อความ)');
+    return;
+  }
+  if(!tickets[i].messages)tickets[i].messages=[];
+  const msg={id:'m'+Date.now(),from:CU.id,fromName:CU.name||CU.username,role:CU.role,text,ts:Date.now()};
+  tickets[i].messages.push(msg);
+  if(CU.role==='admin'){tickets[i].hasAdminReply=true;}
+  saveTickets(tickets);
+  logActivity(`${CU.name||CU.username} ตอบกลับ ticket: ${tickets[i].subj}`);
+  inp.value='';
+  openTicket(activeTicketId);
+  renderInbox();
+  updateInboxBadge();
+}
+
+function updateInboxBadge(){
+  // For regular users: count tickets with unread admin replies
+  if(CU.role==='admin')return;
+  const myTickets=getTickets().filter(t=>t.uid===CU.id);
+  const unread=myTickets.filter(t=>(t.messages||[]).some(m=>m.role==='admin'&&!m.readByUser)).length;
+  const ib=document.getElementById('inbox-badge');
+  if(ib){ib.style.display=unread?'inline':'none';ib.textContent=unread;}
+}
+
+function fmtDateTime(ts){
+  if(!ts)return'-';
+  const d=new Date(ts);
+  return`${d.getDate()}/${d.getMonth()+1} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+}
+
+// Admin test TT standalone
+function renderAdminTTStandalone(){
+  const area=document.getElementById('admin-tt-standalone');
+  if(!area)return;
+  area.innerHTML='';
+  const tts=ls('tt_list_'+CU.id)||[];
+  if(!tts.length){
+    area.innerHTML=`<div class="card"><p style="color:var(--text-s);font-size:13px;">กด "+ สร้างตาราง" ที่หน้าตารางก่อน</p><button class="btn btn-primary btn-sm mt-8" onclick="goPage('timetable')">ไปหน้าตาราง</button></div>`;
+    return;
+  }
+  const ttId=ls('tt_active_'+CU.id)||tts[0]?.id;
+  if(!ttId)return;
+  activeTTId=ttId;
+  const wrap=document.createElement('div');wrap.style.overflowX='auto';wrap.id='admin-tt-table2';
+  area.appendChild(wrap);
+  renderTTTable('admin-tt-table2',ttId,CU.id,false);
+  const sp=document.createElement('div');sp.style.marginTop='14px';
+  sp.innerHTML=`<div class="subj-panel-title">📚 วิชา</div><button class="btn btn-ghost btn-sm mb-8" onclick="openSubjModal()">+ สร้างวิชา</button><div id="admin-subj-panel2"></div>`;
+  area.appendChild(sp);
+  const subjects=getUserSubjects();
+  const spanel=document.getElementById('admin-subj-panel2');
+  if(spanel)spanel.innerHTML=subjects.map(s=>{
+    const col=SUBJ_COLORS.find(c=>c.k===s.ck)||SUBJ_COLORS[0];
+    return`<div class="subj-card" draggable="true" style="background:${col.bg};color:${col.tx};border-color:${col.bd};" ondragstart="event.dataTransfer.setData('subjId','${s.id}');this.classList.add('dragging')" ondragend="this.classList.remove('dragging')">${s.ico||'📚'} <b>${escH(s.code)}</b> ${escH(s.name)}</div>`;
+  }).join('')||'<p style="font-size:12px;color:var(--text-t);">ไม่มีวิชา</p>';
+}
 // ===================================================
 const HW_TYPES = {hw:'📖 การบ้าน',exam:'📋 ทดสอบ',project:'🎯 โปรเจกต์',other:'📌 อื่นๆ'};
 const HW_PRIORITY = {high:'🔴',normal:'🟡',low:'🟢'};
@@ -2456,35 +3028,7 @@ function hwFilter(f){
   });
   renderHWList();
 }
-function renderHWList(){
-  let items=getUserHW();
-  if(hwCurrentFilter==='pending') items=items.filter(h=>!h.done);
-  else if(hwCurrentFilter==='done') items=items.filter(h=>h.done);
-  else if(hwCurrentFilter==='exam') items=items.filter(h=>h.type==='exam');
-  items.sort((a,b)=>(a.due||'9')>(b.due||'9')?1:-1);
-  const list=document.getElementById('hw-list');
-  if(!list)return;
-  if(!items.length){list.innerHTML='<div class="card" style="text-align:center;padding:24px;color:var(--text-t);">ไม่มีรายการ 🎉</div>';return;}
-  list.innerHTML=items.map(h=>{
-    const overdue=h.due&&!h.done&&h.due<new Date().toISOString().slice(0,10);
-    return`<div class="hw-item${h.done?' done':''}">
-      <div class="hw-check${h.done?' checked':''}" onclick="toggleHW('${h.id}')">${h.done?'✓':''}</div>
-      <div style="flex:1;">
-        <div class="hw-text">${HW_PRIORITY[h.priority]||'🟡'} ${escH(h.title)}
-          <span class="hw-badge" style="background:${h.type==='exam'?'#FFE5CC':h.type==='project'?'#E5F0FF':'#F0FFE5'};color:var(--text-s);">${HW_TYPES[h.type]||'📌'}</span>
-          ${overdue?'<span class="hw-badge" style="background:#FFE5E5;color:#C0392B;">⏰ เลยกำหนด</span>':''}
-        </div>
-        ${h.subj?`<div style="font-size:11px;color:var(--text-t);">📚 ${escH(h.subj)}</div>`:''}
-        ${h.detail?`<div style="font-size:11px;color:var(--text-s);margin-top:2px;">${escH(h.detail.slice(0,60))}${h.detail.length>60?'…':''}</div>`:''}
-      </div>
-      <div class="hw-meta">${h.due?formatCalDate(h.due):'-'}</div>
-      <div style="display:flex;gap:3px;">
-        <button class="btn btn-ghost btn-xs" onclick="openHWModal('${h.id}')">✏️</button>
-        <button class="btn btn-danger btn-xs" onclick="deleteHW('${h.id}')">🗑️</button>
-      </div>
-    </div>`;
-  }).join('');
-}
+/* old renderHWList replaced by UX v2 version */
 function openHWModal(editId=null){
   document.getElementById('hw-edit-id').value=editId||'';
   document.getElementById('hw-modal-h').textContent=editId?'📝 แก้ไขรายการ':'📝 เพิ่มรายการ';
@@ -2571,17 +3115,7 @@ function saveReminderSettings(){
   if(s.enabled)startReminderCheck();else stopReminderCheck();
   renderReminderPreview();
 }
-async function requestNotifPermission(){
-  if(!('Notification' in window)){alert('เบราว์เซอร์นี้ไม่รองรับการแจ้งเตือน');return;}
-  const perm=await Notification.requestPermission();
-  if(perm==='granted'){
-    document.getElementById('notif-permission-card').style.display='none';
-    document.getElementById('notif-enabled').checked=true;
-    saveReminderSettings();
-    new Notification('🐱 ตารางคาบเรียน',{body:'เปิดการแจ้งเตือนสำเร็จ!',icon:''});
-    updateNotifStatus();
-  }else{alert('ไม่ได้รับอนุญาตการแจ้งเตือน กรุณาเปิดใน Settings ของเบราว์เซอร์');}
-}
+async /* requestNotifPermission upgraded in features block */
 function updateNotifStatus(){
   const perm=('Notification' in window)?Notification.permission:'unsupported';
   const badge=document.getElementById('notif-status-badge');
@@ -2706,7 +3240,7 @@ function renderAdminAnalytics(){
   const banned=users.filter(u=>u.status==='banned').length;
   document.getElementById('analytics-stats').innerHTML=`
     <div class="admin-stat"><div class="admin-stat-num">${users.length}</div><div class="admin-stat-label">👥 สมาชิกทั้งหมด</div></div>
-    <div class="admin-stat"><div class="admin-stat-num">${tts}</div><div class="admin-stat-label">📅 ตารางทั้งหมด</div></div>
+    <div class="admin-stat"><div class="admin-stat-num">${tts}</div><div class="admin-stat-label">📅 ตารางทั้งระบบ</div></div>
     <div class="admin-stat"><div class="admin-stat-num">${banned}</div><div class="admin-stat-label">🚫 บัญชีถูกแบน</div></div>
     <div class="admin-stat"><div class="admin-stat-num">${(ls('tt_tickets')||[]).length}</div><div class="admin-stat-label">📢 รายงานปัญหา</div></div>`;
   // Signup chart (7 days)
@@ -2763,10 +3297,12 @@ function renderAdminTickets(){
     </div>`).join(''):'<p style="color:var(--text-s);font-size:13px;padding:12px;">ไม่มีรายงานปัญหา 🎉</p>';
 }
 function resolveTicket(id){
+  if(!requireAdmin('resolveTicket'))return;
   const tickets=ls('tt_tickets')||[];
   const i=tickets.findIndex(t=>t.id===id);
   if(i>=0){tickets[i].resolved=!tickets[i].resolved;ss('tt_tickets',tickets);}
   renderAdminTickets();
+  if(activeTicketId===id)openTicket(id);
 }
 
 // ===================================================
@@ -2954,10 +3490,545 @@ function validateAllRegisterFields(){
 }
 
 // ===================================================
+// UX v2 — TOAST NOTIFICATION SYSTEM
+// ===================================================
+function showToast(msg, type='info', duration=3000){
+  const container = document.getElementById('toast-container');
+  if(!container) return;
+  const icons = {success:'✅', error:'❌', warn:'⚠️', info:'💬'};
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  el.innerHTML = `<span class="toast-icon">${icons[type]||'💬'}</span><span style="flex:1;">${msg}</span>`;
+  el.onclick = () => dismissToast(el);
+  container.appendChild(el);
+  if(duration > 0) setTimeout(() => dismissToast(el), duration);
+  return el;
+}
+function dismissToast(el){
+  if(!el || el.classList.contains('toast-hiding')) return;
+  el.classList.add('toast-hiding');
+  setTimeout(() => el.remove(), 280);
+}
+// Override saveSettings to use toast
+const _origSaveSettings = typeof saveSettings === 'function' ? saveSettings : null;
+function saveSettings(){
+  renderTTPage();
+  showToast('✅ บันทึกการตั้งค่าเรียบร้อย', 'success');
+}
+// Override saveProfile to use toast
+const _origSaveProfile = typeof saveProfile === 'function' ? saveProfile : null;
+function saveProfile(){
+  if(typeof _origSaveProfile_real==='function') { _origSaveProfile_real(); showToast('✅ บันทึกข้อมูลส่วนตัวแล้ว', 'success'); }
+}
+// Button with loading state helper
+function btnLoading(btn, loadingText='กำลังบันทึก...'){
+  if(!btn) return;
+  btn._origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = loadingText;
+  btn.classList.add('btn-saving');
+}
+function btnDone(btn, successText='✅ บันทึกแล้ว', revertMs=1800){
+  if(!btn) return;
+  btn.disabled = false;
+  btn.textContent = successText;
+  btn.classList.remove('btn-saving');
+  btn.classList.add('btn-saved');
+  setTimeout(() => {
+    btn.textContent = btn._origText || successText;
+    btn.classList.remove('btn-saved');
+  }, revertMs);
+}
+function btnError(btn){
+  if(!btn) return;
+  btn.disabled = false;
+  btn.textContent = btn._origText || 'ลองใหม่';
+  btn.classList.remove('btn-saving','btn-saved');
+  showToast('เกิดข้อผิดพลาด กรุณาลองใหม่', 'error');
+}
+
+// ===================================================
+// UX v2 — DARK MODE
+// ===================================================
+function toggleDarkMode(){
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('cm_dark', isDark ? '1' : '0');
+  const btn = document.getElementById('dark-btn');
+  if(btn) btn.textContent = isDark ? '☀️' : '🌙';
+  showToast(isDark ? '🌙 โหมดมืดเปิดแล้ว' : '☀️ โหมดสว่างเปิดแล้ว', 'info', 1500);
+}
+function loadDarkMode(){
+  const isDark = localStorage.getItem('cm_dark') === '1';
+  if(isDark){
+    document.body.classList.add('dark-mode');
+    const btn = document.getElementById('dark-btn');
+    if(btn) btn.textContent = '☀️';
+  }
+}
+
+// ===================================================
+// UX v2 — PAGE LOADING INDICATOR
+// ===================================================
+function showPageLoading(pageId){
+  const page = document.getElementById('page-'+pageId);
+  if(!page) return;
+  // Remove old loader
+  page.querySelector('.page-loading')?.remove();
+  const loader = document.createElement('div');
+  loader.className = 'page-loading';
+  loader.innerHTML = `<div class="loading-dots"><span></span><span></span><span></span></div><div style="font-size:13px;color:var(--text-s);">กำลังโหลด...</div>`;
+  page.prepend(loader);
+  return loader;
+}
+function hidePageLoading(pageId){
+  document.getElementById('page-'+pageId)?.querySelector('.page-loading')?.remove();
+}
+
+// ===================================================
+// UX v2 — BREADCRUMBS
+// ===================================================
+const PAGE_NAMES = {
+  dashboard:'แดชบอร์ด', timetable:'ตารางเรียน', calendar:'ปฏิทิน',
+  homework:'การบ้าน', inbox:'กล่องข้อความ', profile:'โปรไฟล์',
+  settings:'ตั้งค่า', reminders:'แจ้งเตือน', report:'แจ้งปัญหา',
+  admin:'Admin', 'admin-tt':'ทดสอบตาราง',
+};
+function renderBreadcrumb(pageId){
+  const name = PAGE_NAMES[pageId] || pageId;
+  return `<div class="breadcrumb"><span>🐱 ClassMeow</span><span class="breadcrumb-sep">›</span><span class="breadcrumb-cur">${name}</span></div>`;
+}
+
+// ===================================================
+// UX v2 — EMPTY STATES (themed with animal art)
+// ===================================================
+function getThemeAnimal(){
+  const cls = Array.from(document.body.classList).find(c => c.startsWith('theme-'));
+  if(!cls) return '🐱';
+  if(cls.includes('cat')) return ['🐱','😸','🙀'][Math.floor(Math.random()*3)];
+  if(cls.includes('dog')) return ['🐶','🐕','🦮'][Math.floor(Math.random()*3)];
+  return ['🌾','🌿','🍂'][Math.floor(Math.random()*3)];
+}
+const EMPTY_STATES = {
+  homework: (filter) => {
+    const msgs = {
+      all:     {art:'📝', title:'ยังไม่มีรายการ', body:'กด "+ เพิ่มรายการ" เพื่อเพิ่มการบ้านหรือทดสอบ', cta:'เพิ่มรายการแรก', fn:"openHWModal()"},
+      pending: {art:'🎉', title:'ว่างหมดเลย!', body:'ไม่มีการบ้านค้าง ทำดีมากเลย!', cta:'', fn:''},
+      done:    {art:'✅', title:'ยังไม่มีรายการที่ทำเสร็จ', body:'ทำการบ้านแล้วติ๊กถูกตรงนี้ได้เลย', cta:'', fn:''},
+      exam:    {art:'📋', title:'ไม่มีทดสอบ/สอบ', body:'กด "+ เพิ่มรายการ" แล้วเลือกประเภท "ทดสอบ"', cta:'เพิ่มทดสอบ', fn:"openHWModal()"},
+    };
+    const m = msgs[filter] || msgs.all;
+    return `<div class="empty-state">
+      <div class="empty-state-art">${m.art}</div>
+      <div class="empty-state-title">${m.title}</div>
+      <div class="empty-state-body">${m.body}</div>
+      ${m.cta ? `<div class="empty-state-cta"><button class="btn btn-primary" onclick="${m.fn}">${m.cta}</button></div>` : ''}
+    </div>`;
+  },
+  notes: () => `<div class="empty-state">
+    <div class="empty-state-art">📌</div>
+    <div class="empty-state-title">ยังไม่มีโน๊ต</div>
+    <div class="empty-state-body">กด "+" ที่วันในปฏิทิน หรือกด "สร้างโน๊ต" เพื่อเพิ่มโน๊ตใหม่</div>
+    <div class="empty-state-cta"><button class="btn btn-primary" onclick="openNoteModal()">✏️ สร้างโน๊ตแรก</button></div>
+  </div>`,
+  timetable: () => `<div class="empty-state">
+    <div class="empty-state-art">${getThemeAnimal()}</div>
+    <div class="empty-state-title">ยังไม่มีตารางเรียน</div>
+    <div class="empty-state-body">กด "+ ใหม่" เพื่อสร้างตารางเรียนตาราง แล้วลากวิชาจากด้านขวามาวางในตาราง</div>
+    <div class="empty-state-cta"><button class="btn btn-primary" onclick="openNewTTModal()">📅 สร้างตารางแรก</button></div>
+  </div>`,
+  subjects: () => `<div class="empty-state" style="padding:20px 12px;">
+    <div class="empty-state-art" style="font-size:40px;">📚</div>
+    <div class="empty-state-title" style="font-size:14px;">ยังไม่มีวิชา</div>
+    <div class="empty-state-body" style="font-size:12px;">กด "+ สร้างวิชาใหม่" แล้วลากมาวางในตาราง</div>
+  </div>`,
+  inbox: () => `<div class="empty-state">
+    <div class="empty-state-art">💌</div>
+    <div class="empty-state-title">ยังไม่มีข้อความ</div>
+    <div class="empty-state-body">หากพบปัญหาในการใช้งาน กด "✏️ แจ้งปัญหาใหม่" เพื่อส่งข้อความหา Admin</div>
+    <div class="empty-state-cta"><button class="btn btn-primary" onclick="openNewTicketModal()">✏️ แจ้งปัญหาแรก</button></div>
+  </div>`,
+  calendar: () => `<div class="empty-state" style="padding:20px 12px;">
+    <div class="empty-state-art" style="font-size:40px;">🗒️</div>
+    <div class="empty-state-title" style="font-size:14px;">ยังไม่มีโน๊ตในเดือนนี้</div>
+    <div class="empty-state-body" style="font-size:12px;">กด "+" ที่วันที่ต้องการเพื่อเพิ่มโน๊ต</div>
+  </div>`,
+  reminders: () => `<div class="empty-state">
+    <div class="empty-state-art">🔔</div>
+    <div class="empty-state-title">ยังไม่มีคาบเรียนใกล้เริ่ม</div>
+    <div class="empty-state-body">เปิดการแจ้งเตือน แล้วระบบจะแจ้งก่อนเรียนตามเวลาที่เลือก</div>
+  </div>`,
+};
+
+// Override renderHWList with improved empty state
+const _origRenderHWList = renderHWList;
+function renderHWList(){
+  let items = getUserHW();
+  const filter = hwCurrentFilter || 'all';
+  if(filter==='pending') items = items.filter(h=>!h.done);
+  else if(filter==='done') items = items.filter(h=>h.done);
+  else if(filter==='exam') items = items.filter(h=>h.type==='exam');
+  items.sort((a,b)=>(a.due||'9')>(b.due||'9')?1:-1);
+  const list = document.getElementById('hw-list');
+  if(!list) return;
+  if(!items.length){ list.innerHTML = EMPTY_STATES.homework(filter); return; }
+  const today = new Date().toISOString().slice(0,10);
+  const HW_TYPES = {hw:'📖 การบ้าน', exam:'📋 ทดสอบ', project:'🎯 โปรเจกต์', other:'📌 อื่นๆ'};
+  const HW_PRIORITY = {high:'🔴', normal:'🟡', low:'🟢'};
+  list.innerHTML = items.map(h => {
+    const overdue = h.due && !h.done && h.due < today;
+    return `<div class="hw-item${h.done?' done':''}">
+      <div class="hw-check${h.done?' checked':''}" onclick="toggleHW('${h.id}')">${h.done?'✓':''}</div>
+      <div style="flex:1;">
+        <div class="hw-text">${HW_PRIORITY[h.priority]||'🟡'} ${escH(h.title)}
+          <span class="hw-badge" style="background:${h.type==='exam'?'#FFE5CC':h.type==='project'?'#E5F0FF':'#F0FFE5'};color:var(--text-s);">${HW_TYPES[h.type]||'📌'}</span>
+          ${overdue?'<span class="hw-badge" style="background:#FFE5E5;color:#C0392B;">⏰ เลยกำหนด</span>':''}
+        </div>
+        ${h.subj?`<div style="font-size:11px;color:var(--text-t);">📚 ${escH(h.subj)}</div>`:''}
+        ${h.detail?`<div style="font-size:11px;color:var(--text-s);margin-top:2px;">${escH(h.detail.slice(0,60))}${h.detail.length>60?'…':''}</div>`:''}
+      </div>
+      <div class="hw-meta">${h.due?formatCalDate(h.due):'-'}</div>
+      <div style="display:flex;gap:3px;">
+        <button class="btn btn-ghost btn-xs" onclick="openHWModal('${h.id}')">✏️</button>
+        <button class="btn btn-danger btn-xs" onclick="deleteHW('${h.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Override renderNotePanel with improved empty state
+const _origRenderNotePanel = typeof renderNotePanel==='function' ? renderNotePanel : null;
+function renderNotePanel(){
+  const subjects = getUserSubjects();
+  const panel = document.getElementById('subj-panel') || document.getElementById('note-card-list');
+  // Note panel
+  const noteList = document.getElementById('note-card-list');
+  if(noteList){
+    const notes = getUserNotes().slice().sort((a,b)=>b.createdAt-a.createdAt);
+    noteList.innerHTML = notes.length ? notes.map(n=>{
+      const col = (window.NOTE_COLORS||[]).find(c=>c.k===n.colorKey)||{bg:'#FFF9C4',tx:'#7A6000',bd:'#FFE082'};
+      return `<div class="note-card" style="background:${col.bg};color:${col.tx};border-color:${col.bd};"
+        draggable="true" ondragstart="calNoteDragStart(event,'${n.id}')" ondragend="this.classList.remove('dragging')">
+        <div class="note-card-title">${escH(n.title)}</div>
+        ${n.body?`<div class="note-card-body">${escH(n.body.slice(0,80))}${n.body.length>80?'…':''}</div>`:''}
+        ${n.date?`<div style="font-size:10px;margin-top:4px;opacity:.6;">📅 ${formatCalDate(n.date)}</div>`:''}
+        <div class="note-card-actions">
+          <button class="subj-card-btn" onclick="openNoteModal('${n.id}')" style="color:${col.tx};">✏️ แก้ไข</button>
+          <button class="subj-card-btn" onclick="deleteNote('${n.id}')" style="color:#C0392B;">🗑️ ลบ</button>
+        </div>
+      </div>`;
+    }).join('') : EMPTY_STATES.notes();
+  }
+  // Subject panel
+  if(panel && panel.id==='subj-panel'){
+    if(!subjects.length){ panel.innerHTML = EMPTY_STATES.subjects(); return; }
+  }
+}
+
+// Override renderInbox with improved empty state
+const _origRenderInbox = typeof renderInbox==='function' ? renderInbox : null;
+function renderInbox(){
+  const panel = document.getElementById('ticket-list-panel');
+  if(!panel) return;
+  let tickets = getTickets();
+  if(CU.role!=='admin') tickets = tickets.filter(t=>t.uid===CU.id);
+  if(!tickets.length){ panel.innerHTML = EMPTY_STATES.inbox(); updateInboxBadge(); return; }
+  const CAT_ICON = {bug:'🐛', feature:'💡', question:'❓', other:'📌'};
+  panel.innerHTML = tickets.map(t=>{
+    const isUnread = CU.role==='admin' ? !t.read : (t.messages||[]).some(m=>m.role==='admin'&&!m.readByUser);
+    const last = t.messages?.[t.messages.length-1];
+    const safeId = String(t.id).replace(/[^a-z0-9_\-]/gi,'');
+    return `<div class="ticket-item${t.id===activeTicketId?' active-ticket':''}${isUnread?' unread-ticket':''}" onclick="openTicket('${safeId}')">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="ticket-item-title">${CAT_ICON[t.cat]||'📌'} ${escH(t.subj.slice(0,30))}</div>
+        <span class="status-chip ${t.resolved?'chip-resolved':'chip-open'}">${t.resolved?'✅':'🔴'}</span>
+      </div>
+      <div class="ticket-item-meta">👤 ${escH(t.uname)} · ${fmtDate(t.ts)}</div>
+      ${last?`<div class="ticket-item-preview">${escH(last.text.slice(0,40))}...</div>`:''}
+    </div>`;
+  }).join('');
+  updateInboxBadge();
+}
+
+// ===================================================
+// UX v2 — ONBOARDING FLOW
+// ===================================================
+const ONBOARD_STEPS = [
+  { art:'🐱', title:'ยินดีต้อนรับสู่ ClassMeow!', body:'แอปจัดการตารางเรียน การบ้าน และปฏิทินส่วนตัว — ทำงานได้แม้ออฟไลน์ 📡' },
+  { art:'📅', title:'สร้างตารางเรียน', body:'ไปที่ "ตารางเรียน" แล้วกด "+ ใหม่" เพื่อสร้างตาราง จากนั้นสร้างวิชาและลากมาวางในช่องคาบได้เลย 🎯' },
+  { art:'📝', title:'ติดตามการบ้าน', body:'หน้า "การบ้าน" ช่วยติดตามงานที่ต้องส่ง แจ้งเตือนเมื่อใกล้เลยกำหนด ✅' },
+  { art:'🎨', title:'เลือกธีมที่ชอบ!', body:'มีธีม 9 แบบ แมว 🐱 หมา 🐶 และคาปิบาร่า 🌾 กด 🎨 ที่มุมขวาบนเพื่อเปลี่ยนธีมได้เลย' },
+];
+let _obStep = 0;
+
+function startOnboarding(){
+  _obStep = 0;
+  document.getElementById('onboarding-overlay').classList.remove('hidden');
+  renderOnboardStep();
+}
+function renderOnboardStep(){
+  const step = ONBOARD_STEPS[_obStep];
+  document.getElementById('ob-art').textContent = step.art;
+  document.getElementById('ob-title').textContent = step.title;
+  document.getElementById('ob-body').textContent = step.body;
+  document.getElementById('ob-num').textContent = `ขั้นที่ ${_obStep+1}/${ONBOARD_STEPS.length}`;
+  document.getElementById('ob-progress').style.width = `${((_obStep+1)/ONBOARD_STEPS.length)*100}%`;
+  // Dots
+  document.getElementById('ob-dots').innerHTML = ONBOARD_STEPS.map((_,i)=>`<div class="onboard-dot${i===_obStep?' active':''}"></div>`).join('');
+  // Next button text
+  const nextBtn = document.getElementById('ob-next');
+  if(nextBtn) nextBtn.textContent = _obStep === ONBOARD_STEPS.length-1 ? '🚀 เริ่มใช้งาน!' : 'ถัดไป →';
+}
+function nextOnboardStep(){
+  if(_obStep < ONBOARD_STEPS.length-1){ _obStep++; renderOnboardStep(); }
+  else finishOnboarding();
+}
+function finishOnboarding(){
+  document.getElementById('onboarding-overlay').classList.add('hidden');
+  localStorage.setItem('cm_onboarded', '1');
+  showToast('🎉 ยินดีต้อนรับสู่ ClassMeow! เริ่มสร้างตารางเรียนได้เลย', 'success', 4000);
+}
+function checkOnboarding(){
+  if(!localStorage.getItem('cm_onboarded')) setTimeout(startOnboarding, 800);
+}
+
+// ===================================================
+// UX v2 — IMPROVED goPage with breadcrumbs + loading
+// ===================================================
+const _origGoPage_ux = goPage;
+function goPage(p){
+  if((p==='admin'||p==='admin-tt')&&(!CU||CU.role!=='admin')){console.warn('SEC: unauthorized');return;}
+  document.querySelectorAll('[id^="page-"]').forEach(el=>el.classList.add('hidden'));
+  const pageEl = document.getElementById('page-'+p);
+  if(pageEl) pageEl.classList.remove('hidden');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelector(`[data-p="${p}"]`)?.classList.add('active');
+  currentPage = p;
+  // Add breadcrumb to page
+  if(pageEl){
+    const existingBC = pageEl.querySelector('.breadcrumb');
+    if(!existingBC){
+      const bc = document.createElement('div');
+      bc.innerHTML = renderBreadcrumb(p);
+      pageEl.prepend(bc.firstChild);
+    }
+  }
+  // Dispatch to render functions
+  if(p==='dashboard') renderDashboard();
+  if(p==='timetable') renderTTPage();
+  if(p==='profile') renderProfile();
+  if(p==='settings') renderSettings();
+  if(p==='admin'&&CU.role==='admin'){renderAdmin();adminTab('overview');}
+  if(p==='admin-tt'&&CU.role==='admin') renderAdminTTStandalone();
+  if(p==='calendar') renderCalendar();
+  if(p==='homework') renderHWList();
+  if(p==='reminders'){updateNotifStatus();renderReminderPreview();}
+  if(p==='inbox'){renderInbox();updateInboxBadge();}
+  closeSidebar();
+}
+
+// ===================================================
+// UX v2 — IMPROVED initApp: dark mode + onboarding
+// ===================================================
+const _origInitApp_ux = initApp;
+function initApp(){
+  _origInitApp_ux && _origInitApp_ux();
+  loadDarkMode();
+  checkOnboarding();
+}
+
+// ===================================================
 // BOOT
 // ===================================================
-if(CU)initApp();
+if(CU) initApp();
 else document.getElementById('auth-screen').style.display='flex';
+</script>
+
+<!-- ============================================================
+     ClassMeow Features Module (SW + Push + OAuth + ICS)
+     โหลดหลัง main script เสมอ
+     ============================================================ -->
+<script>
+// ── Google OAuth stub (works with localStorage version) ──
+function signInWithGoogle(){
+  // localStorage version: show message
+  // Supabase version: override this with classmeow-features.js
+  if(typeof supabase !== 'undefined'){
+    supabase.auth.signInWithOAuth({
+      provider:'google',
+      options:{redirectTo:window.location.origin+window.location.pathname}
+    }).then(({error})=>{
+      if(error) showToast('Google login ไม่สำเร็จ: '+error.message,'error');
+    });
+  } else {
+    showToast('Google Login ต้องใช้กับ Supabase version — เปิดไฟล์ ClassMeow-Supabase.html','warn',5000);
+  }
+}
+
+// ── .ics Export (wire to features module) ──
+function exportToCalendar(){
+  if(typeof window.ClassMeowFeatures !== 'undefined'){
+    window.ClassMeowFeatures.exportToCalendar();
+    return;
+  }
+  // Inline fallback for localStorage version
+  if(!activeTTId){ showToast('กรุณาเลือกตารางก่อน','warn'); return; }
+  const slots=getSlots(activeTTId);
+  if(!Object.keys(slots).length){ showToast('ตารางว่างเปล่า ยังไม่มีวิชา','warn'); return; }
+  const cfg=getUserSettings();
+  const subjects=getUserSubjects();
+  const dayOffsets={'วันจันทร์':0,'วันอังคาร':1,'วันพุธ':2,'วันพฤหัสบดี':3,'วันศุกร์':4,'วันเสาร์':5,'วันอาทิตย์':6};
+  const rruleDays=['MO','TU','WE','TH','FR','SA','SU'];
+  const monday=new Date(); monday.setDate(monday.getDate()-monday.getDay()+1); monday.setHours(0,0,0,0);
+  const pad=n=>String(n).padStart(2,'0');
+  const fmtICS=d=>`${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}T${pad(d.getHours())}${pad(d.getMinutes())}00`;
+  const esc=s=>String(s||'').replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');
+  const now=fmtICS(new Date());
+  let lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//ClassMeow//TH','CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH','X-WR-CALNAME:ClassMeow ตารางเรียน',
+    'BEGIN:VTIMEZONE','TZID:Asia/Bangkok','BEGIN:STANDARD',
+    'DTSTART:19700101T000000','TZOFFSETFROM:+0700','TZOFFSETTO:+0700','TZNAME:ICT',
+    'END:STANDARD','END:VTIMEZONE'];
+  Object.entries(slots).forEach(([key,subjId])=>{
+    const[dayIdxStr,periodId]=key.split('_');
+    const di=parseInt(dayIdxStr);
+    const dayName=cfg.days[di];
+    const period=cfg.periods.find(p=>p.id===periodId);
+    const subj=subjects.find(s=>s.id===subjId);
+    if(!dayName||!period||!subj||period.b)return;
+    const offset=dayOffsets[dayName]??di;
+    const[sh,sm]=period.s.split(':').map(Number);
+    const[eh,em]=period.e.split(':').map(Number);
+    const sd=new Date(monday); sd.setDate(monday.getDate()+offset); sd.setHours(sh,sm,0,0);
+    const ed=new Date(sd); ed.setHours(eh,em,0,0);
+    lines.push('BEGIN:VEVENT',
+      `UID:${key}-${subjId}@classmeow`,`DTSTAMP:${now}`,
+      `DTSTART;TZID=Asia/Bangkok:${fmtICS(sd)}`,
+      `DTEND;TZID=Asia/Bangkok:${fmtICS(ed)}`,
+      `SUMMARY:${esc((subj.ico||'📚')+' '+subj.name)}`,
+      subj.room?`LOCATION:${esc('ห้อง '+subj.room)}`:'',
+      `DESCRIPTION:${esc([subj.code?'รหัส: '+subj.code:'',subj.teacher?'ครู: '+subj.teacher:''].filter(Boolean).join('\\n'))}`,
+      `RRULE:FREQ=WEEKLY;BYDAY=${rruleDays[offset]||'MO'}`,
+      'STATUS:CONFIRMED','END:VEVENT'
+    ).filter(Boolean);
+  });
+  lines.push('END:VCALENDAR');
+  const blob=new Blob([lines.join('\r\n')],{type:'text/calendar;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download='classmeow-timetable.ics'; a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  showToast('📅 Export .ics สำเร็จ! เปิดไฟล์เพื่อ import เข้า Google Calendar','success',5000);
+}
+
+// ── Service Worker Registration ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('classmeow-sw.js',{scope:'/',updateViaCache:'none'})
+      .then(reg=>{
+        console.log('[ClassMeow] SW registered ✅');
+        // Listen for SW messages
+        navigator.serviceWorker.addEventListener('message', ev=>{
+          const{type,url}=ev.data||{};
+          if(type==='NOTIFICATION_CLICK'&&url){
+            const p=new URL(url,window.location).searchParams.get('page');
+            if(p&&typeof goPage==='function'&&CU) goPage(p);
+          }
+        });
+        // Handle URL deep link from notification
+        const urlPage=new URLSearchParams(window.location.search).get('page');
+        if(urlPage){
+          const wait=setInterval(()=>{
+            if(typeof goPage==='function'&&typeof CU!=='undefined'&&CU){
+              clearInterval(wait); goPage(urlPage);
+            }
+          },300);
+          setTimeout(()=>clearInterval(wait),6000);
+        }
+      })
+      .catch(err=>console.warn('[ClassMeow] SW failed:',err));
+  });
+}
+
+// ── PWA Install Prompt ──
+let _deferredInstall=null;
+window.addEventListener('beforeinstallprompt',e=>{
+  e.preventDefault(); _deferredInstall=e;
+  setTimeout(()=>{
+    if(!_deferredInstall||localStorage.getItem('cm_install_dismissed'))return;
+    const t=showToast('📲 ติดตั้ง ClassMeow เป็นแอปบนอุปกรณ์ของคุณ','info',0);
+    if(!t)return;
+    const btn=document.createElement('button');
+    btn.textContent='ติดตั้ง';
+    btn.style.cssText='margin-left:8px;padding:4px 12px;border-radius:6px;border:none;background:rgba(255,255,255,.25);color:#fff;font-weight:700;cursor:pointer;font-family:Sarabun,sans-serif;font-size:12px;';
+    btn.onclick=async()=>{
+      _deferredInstall.prompt();
+      const{outcome}=await _deferredInstall.userChoice;
+      if(outcome==='accepted') showToast('🎉 ติดตั้ง ClassMeow สำเร็จ!','success');
+      _deferredInstall=null; t.remove();
+    };
+    const dis=document.createElement('button');
+    dis.textContent='✕';
+    dis.style.cssText='margin-left:4px;padding:4px 8px;border-radius:6px;border:none;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;';
+    dis.onclick=()=>{localStorage.setItem('cm_install_dismissed','1');t.remove();};
+    t.appendChild(btn); t.appendChild(dis);
+  },20000);
+});
+window.addEventListener('appinstalled',()=>showToast('🎉 ClassMeow ติดตั้งสำเร็จ!','success'));
+
+// ── Improved Push Notification using SW ──
+async function requestNotifPermission(){
+  if(!('Notification' in window)){showToast('เบราว์เซอร์นี้ไม่รองรับ','warn');return;}
+  const perm=await Notification.requestPermission();
+  if(perm==='granted'){
+    // Try subscribe via SW for background notifications
+    if('serviceWorker' in navigator && 'PushManager' in window){
+      try{
+        const reg=await navigator.serviceWorker.ready;
+        // Schedule today's classes
+        scheduleAllClassReminders();
+      }catch(e){console.warn('Push subscribe:',e);}
+    }
+    document.getElementById('notif-permission-card').style.display='none';
+    document.getElementById('notif-enabled').checked=true;
+    saveReminderSettings();
+    new Notification('🐱 ClassMeow',{body:'เปิดการแจ้งเตือนสำเร็จ! ระบบจะแจ้งก่อนเรียนตามเวลาที่เลือก'});
+    updateNotifStatus();
+  } else {
+    showToast('ไม่ได้รับอนุญาต — กรุณาเปิดใน Settings ของเบราว์เซอร์','warn');
+  }
+}
+
+// Schedule all class reminders for today via SW
+async function scheduleAllClassReminders(){
+  const s=getReminderSettings();
+  if(!s.enabled||!activeTTId)return;
+  const cfg=getUserSettings();
+  const slots=getUserSettings?getSlots(activeTTId):{};
+  const subjects=getUserSubjects();
+  const now=new Date();
+  const dayIdx=now.getDay()-1; // 0=Mon
+  if(dayIdx<0||dayIdx>=cfg.days.length)return;
+  if(!('serviceWorker' in navigator))return;
+  const reg=await navigator.serviceWorker.ready;
+  cfg.periods.filter(p=>!p.b).forEach(p=>{
+    const subjId=slots[`${dayIdx}_${p.id}`]; if(!subjId)return;
+    const subj=subjects.find(x=>x.id===subjId); if(!subj)return;
+    const[h,m]=p.s.split(':').map(Number);
+    const classTime=new Date(); classTime.setHours(h,m,0,0);
+    const delayMs=classTime-now-(s.minutes*60000);
+    if(delayMs<=0)return;
+    // Send schedule to SW
+    reg.active?.postMessage({
+      type:'SCHEDULE_NOTIFICATION',
+      payload:{
+        id:`${dayIdx}_${p.id}`,
+        title:`🔔 ${subj.name} เริ่มใน ${s.minutes} นาที`,
+        body:`📍 ${subj.room?'ห้อง '+subj.room:''} ${subj.teacher?'👨‍🏫'+subj.teacher:''}`.trim(),
+        delayMs,
+        tag:`class-${p.id}-${now.toDateString()}`
+      }
+    });
+  });
+}
 </script>
 </body>
 </html>
