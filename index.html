@@ -6,12 +6,14 @@
 <title>🐱 ClassMeow — ตารางเรียนออนไลน์</title>
 <!-- PWA -->
 <link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🐱</text></svg>">
 <meta name="theme-color" content="#A07CD0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="ClassMeow">
 <link rel="apple-touch-icon" href="icon-192.png">
 <!-- SEO -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co;">
 <meta name="description" content="ClassMeow — แอปจัดการตารางเรียน การบ้าน และปฏิทิน สำหรับนักเรียนไทย">
 <meta name="keywords" content="ตารางเรียน, การบ้าน, ปฏิทิน, นักเรียน, ClassMeow">
 <meta property="og:title" content="🐱 ClassMeow">
@@ -401,6 +403,9 @@ body.dark-mode {
   --bg:var(--dm-bg); --card:var(--dm-card); --border:var(--dm-border);
   --text:var(--dm-text); --text-s:var(--dm-text-s); --text-t:#8060A8;
   --shadow:rgba(0,0,0,0.4); --accent-soft:#3D2A50;
+  --accent:#C4A8E8; --p1:#9B6DC8; --p2:#C4A8E8;
+  --accent-soft:#3D2A50;
+  color-scheme: dark;
 }
 body.dark-mode input,
 body.dark-mode select,
@@ -2151,7 +2156,7 @@ function checkPwStrength(){
     {label:'แข็งแรงมาก',color:'#27AE60'},
   ];
   const lv=levels[score]||levels[0];
-  hint.innerHTML=`<span style="color:${lv.color};font-weight:700;">● ${lv.label}</span>${tips.length?' — ควรเพิ่ม: '+tips.join(', '):''}`;
+  hint.innerHTML=`<span style="color:${lv.color};font-weight:700;">● ${lv.label}</span>${tips.length?' — ควรเพิ่ม: '+tips.map(t=>escH(t)).join(', '):''}`;
 }
 
 function _origSaveProfile_real(){
@@ -2991,6 +2996,7 @@ function fmtDateTime(ts){
 
 // Admin test TT standalone
 function renderAdminTTStandalone(){
+  if(!requireAdmin('renderAdminTTStandalone'))return;
   const area=document.getElementById('admin-tt-standalone');
   if(!area)return;
   area.innerHTML='';
@@ -3101,7 +3107,7 @@ async function exportImage(mode){
     // Show preview
     previewArea.innerHTML=`<img src="${out.toDataURL('image/png')}" class="export-preview" style="max-height:200px;object-fit:contain;">
       <p style="font-size:11px;color:var(--text-s);margin-top:6px;text-align:center;">✅ ดาวน์โหลดสำเร็จ!</p>`;
-  }catch(e){previewArea.innerHTML=`<div class="msg msg-err">เกิดข้อผิดพลาด: ${e.message}</div>`;}
+  }catch(e){const safeMsg=String(e.message||'').replace(/</g,'&lt;').replace(/>/g,'&gt;');previewArea.innerHTML=`<div class="msg msg-err">เกิดข้อผิดพลาด: ${safeMsg}</div>`;}
 }
 
 // ===================================================
@@ -3150,7 +3156,11 @@ function renderReminderPreview(){
     const diff=(classTime-now)/60000;
     if(diff>0&&diff<=120)upcoming.push({p,subj:subjects.find(x=>x.id===subj),diff:Math.round(diff)});
   });
-  preview.innerHTML=upcoming.length?`<div style="font-size:12px;font-weight:700;color:var(--text-s);margin-bottom:6px;">📅 คาบที่กำลังจะมาถึงวันนี้:</div>`+upcoming.map(({p,subj,diff})=>`<div style="background:var(--accent-soft);border-radius:8px;padding:8px 10px;margin-bottom:4px;font-size:12px;"><b>${subj?.name||'?'}</b> — ${p.s} <span style="color:var(--accent);">(อีก ${diff} นาที)</span></div>`).join(''):'<p style="font-size:12px;color:var(--text-t);">ไม่มีคาบเรียนใน 2 ชั่วโมงข้างหน้า</p>';
+  preview.innerHTML=upcoming.length
+    ?`<div style="font-size:12px;font-weight:700;color:var(--text-s);margin-bottom:6px;">📅 คาบที่กำลังจะมาถึงวันนี้:</div>`
+    +upcoming.map(({p,subj,diff})=>`<div style="background:var(--accent-soft);border-radius:8px;padding:8px 10px;margin-bottom:4px;font-size:12px;">
+    <b>${escH(subj?.name||'?')}</b> — ${escH(p.s)} <span style="color:var(--accent);">(อีก ${diff} นาที)</span></div>`).join('')
+    :'<p style="font-size:12px;color:var(--text-t);">ไม่มีคาบเรียนใน 2 ชั่วโมงข้างหน้า</p>';
 }
 function testReminder(){
   if(Notification.permission!=='granted'){alert('กรุณาเปิดอนุญาตการแจ้งเตือนก่อน');return;}
@@ -3839,6 +3849,17 @@ function initApp(){
 // ===================================================
 // BOOT
 // ===================================================
+
+// Global unhandled promise rejection handler
+window.addEventListener('unhandledrejection', (event) => {
+  console.error('[ClassMeow] Unhandled promise rejection:', event.reason);
+  // Don't show toast for abort errors (normal cancellation)
+  if(event.reason?.name === 'AbortError') return;
+  if(typeof showToast === 'function'){
+    showToast('เกิดข้อผิดพลาดในระบบ กรุณาลองใหม่', 'error', 4000);
+  }
+  event.preventDefault();
+});
 if(CU) initApp();
 else document.getElementById('auth-screen').style.display='flex';
 </script>
@@ -3922,7 +3943,7 @@ function exportToCalendar(){
 // ── Service Worker Registration ──
 if('serviceWorker' in navigator){
   window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('classmeow-sw.js',{scope:'/',updateViaCache:'none'})
+    navigator.serviceWorker.register('classmeow-sw.js',{updateViaCache:'none'})
       .then(reg=>{
         console.log('[ClassMeow] SW registered ✅');
         // Listen for SW messages
@@ -4002,7 +4023,8 @@ async function scheduleAllClassReminders(){
   const s=getReminderSettings();
   if(!s.enabled||!activeTTId)return;
   const cfg=getUserSettings();
-  const slots=getUserSettings?getSlots(activeTTId):{};
+  if(!activeTTId) return;
+  const slots=getSlots(activeTTId)||{};
   const subjects=getUserSubjects();
   const now=new Date();
   const dayIdx=now.getDay()-1; // 0=Mon
